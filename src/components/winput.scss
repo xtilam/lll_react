@@ -1,0 +1,115 @@
+$labelSmallSize: 12px;
+$marginGroup: $labelSmallSize + 10px;
+.winput-group-custom {
+    position: relative;
+    margin-top: $marginGroup;
+    margin-bottom: 7px;
+    width: 100%;
+    > label {
+        color: #999;
+        position: absolute;
+        left: 8px;
+        top: ($labelSmallSize + 2px) * -1;
+        font-size: $labelSmallSize;
+        line-height: $labelSmallSize;
+    }
+}
+.winput-group {
+    $timeAnimation: 0.1s;
+    $inputPadding: 8px;
+    $inputFontSize: 15px;
+    $inputHeight: $inputFontSize + $inputPadding * 2 + 6px;
+
+    position: relative;
+    margin-top: $marginGroup;
+    margin-bottom: 7px;
+    width: 100%;
+    > input {
+        font-size: $inputFontSize;
+        height: $inputHeight;
+        line-height: $inputHeight - $inputPadding * 2;
+        padding: $inputPadding;
+        display: block;
+        width: 100%;
+        border: none;
+        border-bottom: 1px solid #757575;
+        background-color: #f6f6f6;
+        //title name================//
+        & ~ label {
+            color: #999;
+            font-size: $inputFontSize;
+            font-weight: normal;
+            position: absolute;
+            pointer-events: none;
+            left: $inputPadding;
+            top: $inputPadding;
+            line-height: $inputHeight - $inputPadding * 2;
+            transition: $timeAnimation ease all;
+            -moz-transition: $timeAnimation ease all;
+            -webkit-transition: $timeAnimation ease all;
+        }
+        &:focus {
+            outline: none;
+        }
+        &[type="datetime"] ~ label,
+        &[type="date"] ~ label,
+        &.no-label-eff[type="date"] ~ label,
+        &:not(:empty) ~ label{
+            top: ($labelSmallSize + 2px) * -1;
+            line-height: $labelSmallSize;
+            font-size: $labelSmallSize;
+        }
+        &:focus ~ label,
+        &:valid ~ label {
+            top: ($labelSmallSize + 2px) * -1;
+            line-height: $labelSmallSize;
+            font-size: $labelSmallSize;
+            color: #5264ae;
+        }
+        &:read-only {
+            color: #aaa;
+            background-color: #fdfdfd;
+            & ~ label {
+                top: ($labelSmallSize + 2px) * -1;
+                line-height: $labelSmallSize;
+                font-size: $labelSmallSize;
+                color: #aaa;
+            }
+        }
+        //effect bottom=====================//
+        & ~ .bar {
+            position: relative;
+            display: block;
+            width: 100%;
+            &:before,
+            &:after {
+                content: "";
+                height: 3px;
+                width: 0;
+                bottom: 1px;
+                position: absolute;
+                background: #5264ae;
+                transition: $timeAnimation ease all;
+                -moz-transition: $timeAnimation ease all;
+                -webkit-transition: $timeAnimation ease all;
+            }
+            &:before {
+                left: 50%;
+            }
+            &:after {
+                right: 50%;
+            }
+        }
+        &.incorrect-input ~ .bar:before,
+        &.incorrect-input ~ .bar:after {
+            background: red;
+            width: 50%;
+        }
+
+        /* active state */
+        &:focus ~ .bar:before,
+        &:focus ~ .bar:after {
+            width: 50%;
+        }
+    }
+}

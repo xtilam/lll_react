@@ -1,0 +1,132 @@
+%disableUserSelect {
+    -moz-user-select: none;
+    user-select: none;
+}
+
+$headerHeight: 35px;
+$menuTabSize: 220px;
+
+#parent-layout {
+    height: 100%;
+}
+header {
+    position: relative;
+    z-index: 999999;
+    background-color: #ddd;
+    width: 100%;
+    padding: 5px;
+    color: black;
+    font-size: 20px;
+    line-height: 22px;
+    height: $headerHeight;
+    > #show-menu {
+        display: none;
+    }
+}
+div#app-body {
+    > div#menu-tab {
+        $itemTopSpace: 5px;
+        width: $menuTabSize;
+        background-color: #ccc;
+        height: 100%;
+        padding: $itemTopSpace 0;
+        overflow-y: auto;
+        min-width: $menuTabSize;
+        * {
+            overflow: hidden;
+            text-overflow: ellipsis;
+            color: black;
+            cursor: pointer;
+        }
+        ul,
+        li {
+            padding: 0;
+            white-space: nowrap;
+            max-width: 100%;
+            margin-left: 8px;
+        }
+        .item-menu {
+            background-color: #999;
+            padding: $itemTopSpace 5px;
+            border-radius: 5px;
+            margin: 2px 5px 2px 0;
+            font-size: 15px;
+            @extend %disableUserSelect;
+        }
+        li > ul {
+            margin-left: 0;
+        }
+        > ul {
+            padding: 0;
+            margin-left: 2px;
+        }
+        > ul > li {
+            margin-left: 2px;
+        }
+        a {
+            text-decoration: none;
+        }
+    }
+    > div#app-content {
+        background-color: grey;
+        width: 100%;
+        height: 100%;
+    }
+}
+div.dropdown-menu {
+    margin: 8px 0 0 0;
+    padding: 0 5px;
+    * {
+        color: black;
+    }
+    box-shadow: rgba(0, 0, 0, 0.2) 0px 12px 28px 0px, rgba(0, 0, 0, 0.1) 0px 2px 4px 0px,
+        rgba(255, 255, 255, 0.5) 0px 0px 0px 1px inset;
+    > button.dropdown-item {
+        border-radius: 5px;
+        margin: 5px 0px;
+        padding: 10px 20px;
+        &:hover {
+            background-color: #ddd;
+        }
+        &:active {
+            border: none;
+            outline: none;
+            color: black;
+            background-color: #ccc;
+        }
+    }
+    a {
+        text-decoration: none;
+        cursor: pointer;
+    }
+}
+
+@media screen and (max-width: 800px) {
+    header {
+        > #show-menu {
+            display: block;
+            position: relative;
+            z-index: 999999;
+        }
+    }
+    #menu-tab {
+        position: absolute;
+        z-index: 999999;
+        top: 0;
+        left: $menuTabSize * -1;
+    }
+    #menu-tab.is-display {
+        left: 0;
+        &::before {
+            content: "";
+            position: fixed;
+            width: 100%;
+            height: 100%;
+            background-color: black;
+            opacity: 0.3;
+            z-index: -1;
+            top: $headerHeight;
+            left: $menuTabSize;
+        }
+    }
+}
