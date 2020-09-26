@@ -10,9 +10,6 @@ export default class WDropdown extends React.Component<propsDropdownCustom, { is
         super(props);
         this.state = { isOpen: false };
     }
-    toggle(e: any) {
-        console.log(e);
-    }
     render() {
         return <Dropdown isOpen={this.state.isOpen} toggle={() => { this.setState((state) => { return { isOpen: !this.state.isOpen } }) }}>
             {this.props.dropdownToggle}

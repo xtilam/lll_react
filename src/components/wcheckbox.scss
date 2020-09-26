@@ -1,0 +1,18 @@
+$checkboxSize: 20px;
+label.wcheckbox {
+    & > input[type="checkbox"] {
+        display: none;
+    }
+    & > .done-svg {
+        position: absolute;
+    }
+    &.checked{
+        border: none;
+    }
+    position: relative;
+    width: $checkboxSize;
+    height: $checkboxSize;
+    border-radius: 99999999px;
+    display: block;
+    border: 1px solid #555;
+}

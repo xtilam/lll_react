@@ -1,29 +1,14 @@
 $labelSmallSize: 12px;
-$marginGroup: $labelSmallSize + 10px;
-.winput-group-custom {
-    position: relative;
-    margin-top: $marginGroup;
-    margin-bottom: 7px;
-    width: 100%;
-    > label {
-        color: #999;
-        position: absolute;
-        left: 8px;
-        top: ($labelSmallSize + 2px) * -1;
-        font-size: $labelSmallSize;
-        line-height: $labelSmallSize;
-    }
-}
+$marginGroup: $labelSmallSize + 8px;
+$inputPadding: 8px;
+$inputFontSize: 15px;
+$inputHeight: $inputFontSize + $inputPadding * 2 + 6px;
 .winput-group {
-    $timeAnimation: 0.1s;
-    $inputPadding: 8px;
-    $inputFontSize: 15px;
-    $inputHeight: $inputFontSize + $inputPadding * 2 + 6px;
-
     position: relative;
-    margin-top: $marginGroup;
-    margin-bottom: 7px;
+    padding-top: $marginGroup;
+    padding-bottom: 5px;
     width: 100%;
+
     > input {
         font-size: $inputFontSize;
         height: $inputHeight;
@@ -34,82 +19,85 @@ $marginGroup: $labelSmallSize + 10px;
         border: none;
         border-bottom: 1px solid #757575;
         background-color: #f6f6f6;
-        //title name================//
-        & ~ label {
-            color: #999;
-            font-size: $inputFontSize;
-            font-weight: normal;
-            position: absolute;
-            pointer-events: none;
-            left: $inputPadding;
-            top: $inputPadding;
-            line-height: $inputHeight - $inputPadding * 2;
-            transition: $timeAnimation ease all;
-            -moz-transition: $timeAnimation ease all;
-            -webkit-transition: $timeAnimation ease all;
-        }
         &:focus {
             outline: none;
+            border-color: transparent;
         }
-        &[type="datetime"] ~ label,
-        &[type="date"] ~ label,
-        &.no-label-eff[type="date"] ~ label,
-        &:not(:empty) ~ label{
-            top: ($labelSmallSize + 2px) * -1;
-            line-height: $labelSmallSize;
-            font-size: $labelSmallSize;
-        }
-        &:focus ~ label,
-        &:valid ~ label {
-            top: ($labelSmallSize + 2px) * -1;
-            line-height: $labelSmallSize;
-            font-size: $labelSmallSize;
-            color: #5264ae;
-        }
-        &:read-only {
-            color: #aaa;
-            background-color: #fdfdfd;
-            & ~ label {
-                top: ($labelSmallSize + 2px) * -1;
-                line-height: $labelSmallSize;
-                font-size: $labelSmallSize;
-                color: #aaa;
-            }
-        }
-        //effect bottom=====================//
-        & ~ .bar {
-            position: relative;
-            display: block;
-            width: 100%;
-            &:before,
-            &:after {
-                content: "";
-                height: 3px;
-                width: 0;
-                bottom: 1px;
-                position: absolute;
-                background: #5264ae;
-                transition: $timeAnimation ease all;
-                -moz-transition: $timeAnimation ease all;
-                -webkit-transition: $timeAnimation ease all;
-            }
-            &:before {
-                left: 50%;
-            }
-            &:after {
-                right: 50%;
-            }
-        }
-        &.incorrect-input ~ .bar:before,
-        &.incorrect-input ~ .bar:after {
-            background: red;
-            width: 50%;
-        }
+    }
+    > label {
+        position: absolute;
+        left: $inputPadding;
+        pointer-events: none;
+    }
+    > label.focus {
+        color: rebeccapurple;
+    }
+    > .bar {
+        height: 4px;
+        position: absolute;
+        bottom: 5px;
+        width: 0;
+        background-color: rebeccapurple;
+    }
+    > .bar.invalid {
+        background-color: red;
+    }
+}
 
-        /* active state */
-        &:focus ~ .bar:before,
-        &:focus ~ .bar:after {
-            width: 50%;
+.winput-group-other-lg {
+    position: relative;
+    margin-top: 25px;
+    margin-bottom: 5px;
+    width: 100%;
+    > label {
+        position: absolute;
+        left: 8px;
+        top: -18px;
+        font-size: 12px;
+        pointer-events: none;
+        opacity: 0.97;
+    }
+}
+
+.winput-group-other {
+    position: relative;
+    padding-top: $marginGroup;
+    padding-bottom: 5px;
+    width: 100%;
+
+    > label {
+        position: absolute;
+        left: 8px;
+        top: 2px;
+        font-size: $labelSmallSize;
+        pointer-events: none;
+        opacity: 0.97;
+    }
+    > .bar {
+        height: 0;
+        position: absolute;
+        bottom: 5px;
+        width: 100%;
+        background-color: rebeccapurple;
+    }
+    > *:not(label):not(.bar) {
+        width: 100%;
+        background-color: #f6f6f6;
+        border: none;
+        border-bottom: 1px solid #757575;
+        &:not(textarea){
+            height: $inputHeight;
+        }
+        position: relative;
+        &:focus {
+            outline: none;
+            border-color: transparent;
+        }
+        &:focus ~ label {
+            color: rebeccapurple;
+        }
+        &:focus ~ .bar {
+            height: 4px;
         }
     }
 }

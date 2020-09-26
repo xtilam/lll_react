@@ -15,20 +15,23 @@
     "@types/react-router-dom": "^5.1.5",
     "axios": "^0.19.2",
     "bootstrap": "^4.5.2",
+    "moment": "^2.27.0",
     "node-sass": "^4.14.1",
     "query-string": "^6.13.1",
     "react": "^16.13.1",
     "react-dom": "^16.13.1",
     "react-router-dom": "^5.2.0",
     "react-scripts": "3.4.3",
+    "react-spring": "^8.0.27",
     "reactstrap": "^8.5.1",
-    "typescript": "~3.7.2"
+    "typescript": "~3.7.2",
+    "yarn": "^1.22.5"
   },
   "scripts": {
     "start": "react-scripts start",
-    "copyStaticSource": "(rm -r $npm_package_config_SBProjectPath$npm_package_config_SBStaticPath** || true) && (cp -a ./build/. $npm_package_config_SBProjectPath$npm_package_config_SBStaticPath/ || true)",
-    "copyStaticBuild": "(rm -r $npm_package_config_SBProjectPath$npm_package_config_SBBuildPath** || true) && (cp -a ./build/. $npm_package_config_SBProjectPath$npm_package_config_SBBuildPath/ || true)",
-    "cleanBuild": "(rm -r ./build/** || true)",
+    "copyStaticSource": "(rm -r %npm_package_config_SBProjectPath%%npm_package_config_SBStaticPath%** || true) && (cp -a ./build/. %npm_package_config_SBProjectPath%%npm_package_config_SBStaticPath%/ || true)",
+    "copyStaticBuild": "(rm -r %npm_package_config_SBProjectPath%%npm_package_config_SBBuildPath%** || true) && (cp -a ./build/. %npm_package_config_SBProjectPath%%npm_package_config_SBBuildPath%/ || true)",
+    "cleanBuild": "(rm -r ./build || true)",
     "build": "react-scripts build && yarn copyStaticSource && yarn copyStaticBuild && yarn cleanBuild",
     "test": "react-scripts test",
     "eject": "react-scripts eject"
@@ -52,9 +55,8 @@
     "@types/reactstrap": "^8.5.1"
   },
   "config": {
-    "SBProjectPath": "/home/dinzenida/Desktop/lll/",
+    "SBProjectPath": "D:/Project/libll/",
     "SBStaticPath": "src/main/resources/static/",
-    "SBBuildPath": "target/classes/static/",
-    "c1": "(rm -r /home/dinzenida/Desktop/lll/target/classes/static/**) && (cp -a /home/dinzenida/Desktop/lll/src/main/resources/static/. /home/dinzenida/Desktop/lll/target/classes/static/)"
+    "SBBuildPath": "target/classes/static/"
   }
 }

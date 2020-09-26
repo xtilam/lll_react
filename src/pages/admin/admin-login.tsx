@@ -1,62 +1,57 @@
-import React, { FormEvent } from "react";
+import React from "react";
 import { Redirect } from "react-router-dom";
 import authentication from "../../admin-auth";
 import AdminUserAPI from "../../api/admin/admin-api";
+import WForm from "../../components/wform";
 import WInput from "../../components/winput";
+import SYSTEM_CONSTANTS from "../../constants";
+import AdminAuthenticationProvider, { AdminAuthentication } from "../../contexts/admin-authencation";
 import LoadingSVG from "../../logo-svg/loading";
 import './admin-login.scss';
 interface LoginPageState {
     statusLogin: string | undefined,
+    accountInput: string,
+    passwordInput: string,
     userInputType: {
-        paramName: string | undefined,
+        paramName: 'username' | 'email',
         name: string | undefined
-    } | any
+    }
+    isWattingRequest: boolean
 }
 
 export default class LoginPage extends React.Component<any, LoginPageState> {
-    static REGEX = {
-        username: /^[a-zA-Z0-9]+([._]?[a-zA-Z0-9]+)*$/g,
-        email: /^[a-z][a-z0-9_\.]{5,32}@[a-z0-9]{2,}(\.[a-z0-9]{2,4}){1,2}$/g
-    }
-    usernameInput: React.RefObject<HTMLInputElement>;
-    passwordInput: React.RefObject<HTMLInputElement>;
-    loginBtn: React.RefObject<HTMLButtonElement>;
+    accountType: 'username' | 'email' | undefined = undefined;
     constructor(props: any) {
         super(props);
-        this.usernameInput = React.createRef();
-        this.passwordInput = React.createRef();
-        this.loginBtn = React.createRef();
         this.state = {
             statusLogin: undefined,
-            userInputType: {}
+            accountInput: '',
+            passwordInput: '',
+            userInputType: {} as any,
+            isWattingRequest: false
         }
     }
     componentDidMount() {
-
-        this.usernameInput.current?.parentElement?.click();
+        $('#username-input').focus();
     }
-    userTypeOnChange() {
-        let inputText = this.usernameInput.current?.value || '';
-        if (inputText.match(LoginPage.REGEX.email)) {
-            this.setState({ userInputType: { paramName: 'email', name: 'Email' } });
-        } else if (inputText.match(LoginPage.REGEX.username)) {
-            this.setState({ userInputType: { paramName: 'username', name: 'Tên đăng nhập' } });
+    userTypeOnChange(evt: React.FormEvent<HTMLInputElement>) {
+        let inputText = evt.currentTarget.value;
+        if (inputText.match(SYSTEM_CONSTANTS.REGEX.email)) {
+            this.setState({ accountInput: inputText, userInputType: { paramName: 'email', name: 'Email' } });
+        } else if (inputText.match(SYSTEM_CONSTANTS.REGEX.code)) {
+            this.setState({ accountInput: inputText, userInputType: { paramName: 'username', name: 'Tên đăng nhập' } });
         } else {
-            this.setState({ userInputType: {} });
+            this.setState({ accountInput: inputText, userInputType: {} as any });
         }
     }
-    async onSubmit(evt: FormEvent) {
+    async onSubmit(evt: React.FormEvent<HTMLFormElement>) {
         evt.preventDefault();
-        console.log(this.state.userInputType);
         if (this.state.userInputType.paramName) {
             await new Promise(async (resolve) => {
                 let statusLoginCompelete: any;
                 let isSkipTimeout = false;
                 let setCompelete = (statusLogin: string) => {
-                    this.setState({ statusLogin: statusLogin });
-                    this.usernameInput.current?.removeAttribute('readonly');
-                    this.passwordInput.current?.removeAttribute('readonly');
-                    (this.loginBtn.current as HTMLButtonElement).disabled = false;
+                    this.setState(() => { return { statusLogin: statusLogin, isWattingRequest: false } });
                 }
 
                 setTimeout(() => {
@@ -64,60 +59,69 @@ export default class LoginPage extends React.Component<any, LoginPageState> {
                     isSkipTimeout = true;
                 }, 1000);
 
-                this.setState({ statusLogin: 'wait-login' });
-                this.usernameInput.current?.setAttribute('readonly', '');
-                this.passwordInput.current?.setAttribute('readonly', '');
-                (this.loginBtn.current as HTMLButtonElement).disabled = true;
-                let dataLogin: any = { password: this.passwordInput.current?.value };
-                dataLogin[this.state.userInputType.paramName] = this.usernameInput.current?.value;
-                console.log(dataLogin);
+                this.setState(() => { return { statusLogin: 'wait-login', isWattingRequest: true } });
                 try {
-                    let resp = await AdminUserAPI.login(dataLogin as any);
-                    authentication.login(resp.data);
+                    let resp = await AdminUserAPI.login({
+                        [this.state.userInputType.paramName]: this.state.accountInput,
+                        password: this.state.passwordInput
+                    });
+                    authentication.login(resp.data.token, resp.data.user);
                 } catch (error) {
-                    console.log(error);
                     if (isSkipTimeout)
                         setCompelete('login-failed');
                     else
                         statusLoginCompelete = 'login-failed';
                 }
             });
-        } else {
-            this.usernameInput.current?.focus();
-            this.setState({ statusLogin: 'input-wrong' });
         }
     }
     render() {
-        if (authentication.isLogin()) {
-            return <Redirect to='/admin'></Redirect>;
-        } else {
-            return (<div style={{ padding: '20px' }}>
-                <form id='login-form' className='d-flex flex-column' onSubmit={this.onSubmit.bind(this)}>
-                    <h2 className='text-center'>Đăng Nhập</h2>
-                    <WInput nameInput={this.state.userInputType.name || 'Tên đăng nhập hoặc Email'}>
-                        <input className={this.state.userInputType.name ? '' : 'incorrect-input'} onChange={this.userTypeOnChange.bind(this)} type='text' required ref={this.usernameInput}></input></WInput>
-                    <WInput nameInput='Mật khẩu'>
-                        <input type='password' required ref={this.passwordInput}></input></WInput>
-                    <div className='status-login'>
-                        {(() => {
-                            let output;
-                            switch (this.state.statusLogin) {
-                                case 'wait-login':
-                                    output = <div className='d-inline-flex align-items-center'><LoadingSVG className='spin' style={{ marginRight: '8px', height: '14px' }} /><span className='loading-text'>Đang đăng nhập</span></div>;
-                                    break;
-                                case 'login-failed':
-                                    output = <span className='text-danger'>Đăng nhập thất bại</span>;
-                                    break;
-                                case 'input-wrong':
-                                    output = <span className='text-danger'>Vui lòng nhập thông tin chính xác</span>
-                                    break;
-                            }
-                            return output;
-                        })()}
-                    </div>
-                    <button className='btn btn-success' ref={this.loginBtn}>Đăng Nhập</button>
-                </form>
-            </div>)
-        }
+        let { accountInput, passwordInput, isWattingRequest } = this.state;
+        return <AdminAuthenticationProvider>
+            <AdminAuthentication.Consumer>
+                {({ isLogin }) => {
+                    return !isLogin
+                        ? (<div style={{ padding: '20px' }}>
+                            <WForm id='login-form' className='d-flex flex-column' onSubmit={this.onSubmit.bind(this)}>
+                                <h2 className='text-center'>Đăng Nhập</h2>
+                                <WInput
+                                    type="text" required
+                                    title_input={this.state.userInputType.name || 'Tên đăng nhập hoặc Email'}
+                                    is_invalid={this.state.userInputType.name === undefined}
+                                    value={accountInput}
+                                    onChange={this.userTypeOnChange.bind(this)} disabled={isWattingRequest}
+                                    id="username-input"
+                                ></WInput>
+                                <WInput title_input='Mật khẩu' type="password" required
+                                    value={passwordInput}
+                                    onChange={(evt) => {
+                                        this.setState({ passwordInput: evt.currentTarget.value });
+                                    }}
+                                    disabled={isWattingRequest}
+                                ></WInput>
+                                <div className='status-login'>
+                                    {(() => {
+                                        let output;
+                                        switch (this.state.statusLogin) {
+                                            case 'wait-login':
+                                                output = <div className='d-inline-flex align-items-center'><LoadingSVG className='spin' style={{ marginRight: '8px', height: '14px' }} /><span className='loading-text'>Đang đăng nhập</span></div>;
+                                                break;
+                                            case 'login-failed':
+                                                output = <span className='text-danger'>Đăng nhập thất bại</span>;
+                                                break;
+                                            case 'input-wrong':
+                                                output = <span className='text-danger'>Vui lòng nhập thông tin chính xác</span>
+                                                break;
+                                        }
+                                        return output;
+                                    })()}
+                                </div>
+                                <button className='btn btn-success' disabled={isWattingRequest}>Đăng Nhập</button>
+                            </WForm>
+                        </div>)
+                        : <Redirect to="/admin" />
+                }}
+            </AdminAuthentication.Consumer>
+        </AdminAuthenticationProvider>
     }
 }

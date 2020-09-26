@@ -18,6 +18,7 @@ header {
     color: black;
     font-size: 20px;
     line-height: 22px;
+    box-shadow: 0 1px 10px #888;
     height: $headerHeight;
     > #show-menu {
         display: none;
@@ -30,7 +31,7 @@ div#app-body {
         background-color: #ccc;
         height: 100%;
         padding: $itemTopSpace 0;
-        overflow-y: auto;
+        overflow: auto;
         min-width: $menuTabSize;
         * {
             overflow: hidden;
@@ -46,9 +47,10 @@ div#app-body {
             margin-left: 8px;
         }
         .item-menu {
-            background-color: #999;
+            background-color: #888;
             padding: $itemTopSpace 5px;
             border-radius: 5px;
+            color: white;
             margin: 2px 5px 2px 0;
             font-size: 15px;
             @extend %disableUserSelect;
@@ -68,20 +70,147 @@ div#app-body {
         }
     }
     > div#app-content {
-        background-color: grey;
+        background-color: #eee;
         width: 100%;
         height: 100%;
+        overflow: auto;
+        padding: 10px 15px;
+        position: relative;
+        > div.override-content{
+            position: absolute;
+            background-color: #eee;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            overflow: auto;
+            >*{
+                position: absolute;
+                padding: 20px 15px;
+                width: 100%;
+                height: 100%;
+                overflow: auto;
+            }
+        }
+        table.wtable-info {
+            width: 100%;
+            > tbody > tr > td:nth-child(1) {
+                max-width: 70px;
+                font-weight: 600;
+                text-shadow: none;
+            }
+        }
+        .menu-select-layout {
+            display: flex;
+            position: absolute;
+            top: 0;
+            left: 0;
+            height: 100%;
+            width: 100%;
+            justify-content: space-between;
+            align-items: center;
+            > .menu-select {
+                width: 220px;
+                border: 1px #222 solid;
+                height: calc(100% - 20px);
+                list-style-type: none;
+                padding: 5px 5px;
+                box-shadow: 4px 4px #555;
+                overflow-y: auto;
+                margin-left: 10px;
+                > ul {
+                    padding: 0;
+                    > li {
+                        list-style-type: none;
+                        background-color: #fafafa;
+                        font-weight: 600;
+                        border-bottom: 1px solid #777;
+                        margin-bottom: 6px;
+                        padding: 4px 0 4px 12px;
+                        color: black;
+                        cursor: pointer;
+                        > * {
+                            width: 100%;
+                            display: block;
+                            color: unset;
+                        }
+                        a:hover {
+                            text-decoration: none;
+                        }
+                        &.active {
+                            box-shadow: inset -5px 0 rebeccapurple;
+                        }
+                        &:hover {
+                            opacity: 1;
+                            margin-bottom: 3px;
+                            border-bottom: 4px solid rebeccapurple;
+                            background-color: #fa1 !important;
+                            color: white !important;
+                            box-shadow: none;
+                        }
+                        &:active {
+                            opacity: 0.7;
+                        }
+                    }
+                }
+            }
+            > .child-content {
+                height: 100%;
+                overflow: auto;
+                width: calc(100% - 230px);
+                > * {
+                    max-height: 100%;
+                }
+            }
+        }
+        #main-view {
+            height: 100%;
+            > .f-bar {
+                padding: 5px 10px;
+            }
+            .table-view table .wcheckbox {
+                margin: auto;
+                margin-top: 5px;
+            }
+        }
+        .default-view{
+            max-width: 800px;
+            width: 100%;
+            margin: auto;
+        }
+        .form-container {
+            max-width: 800px;
+            margin-left: auto;
+            margin-right: auto;
+            width: 100%;
+            min-width: 200px;
+            padding-top: 20px;
+            #form-main {
+                width: 100%;
+            }
+            .avatar {
+                width: 70px;
+                height: 70px;
+                border-radius: 99999999px;
+                box-shadow: 0px 3px 12px #888;
+                margin-right: 10px;
+                object-fit: cover;
+            }
+        }
     }
+    
 }
 div.dropdown-menu {
     margin: 8px 0 0 0;
     padding: 0 5px;
+    border-radius: 6px;
+    border: none;
     * {
         color: black;
     }
     box-shadow: rgba(0, 0, 0, 0.2) 0px 12px 28px 0px, rgba(0, 0, 0, 0.1) 0px 2px 4px 0px,
         rgba(255, 255, 255, 0.5) 0px 0px 0px 1px inset;
-    > button.dropdown-item {
+    > .dropdown-item {
         border-radius: 5px;
         margin: 5px 0px;
         padding: 10px 20px;
@@ -111,7 +240,7 @@ div.dropdown-menu {
     }
     #menu-tab {
         position: absolute;
-        z-index: 999999;
+        z-index: 1;
         top: 0;
         left: $menuTabSize * -1;
     }
@@ -122,11 +251,56 @@ div.dropdown-menu {
             position: fixed;
             width: 100%;
             height: 100%;
-            background-color: black;
+            background-color: rebeccapurple;
             opacity: 0.3;
             z-index: -1;
             top: $headerHeight;
             left: $menuTabSize;
+        }
+    }
+}
+.alert {
+    padding: 0.25rem 0.5rem;
+    &.alert-danger::before {
+        content: "Lỗi: ";
+        font-weight: 800;
+        padding-right: 4px;
+    }
+    &.alert-warning::before {
+        content: "Cảnh báo : ";
+        font-weight: 800;
+        padding-right: 4px;
+    }
+    &.alert-success::before {
+        content: "Thông báo : ";
+        padding-right: 4px;
+        font-weight: 800;
+    }
+}
+svg.icon {
+    width: 15px;
+    transform: translate(0, -2px);
+    margin: 0 2px;
+}
+.d-flex {
+    &.space-sm > * {
+        margin-left: 3px;
+        margin-right: 3px;
+    }
+    &.space-nm > * {
+        margin-left: 8px;
+        margin-right: 8px;
+    }
+    &.space-lg > * {
+        margin-left: 15px;
+        margin-right: 15px;
+    }
+    &[class*="space-"] > * {
+        &:last-child {
+            margin-right: 0;
+        }
+        &:nth-child(1) {
+            margin-left: 0;
         }
     }
 }

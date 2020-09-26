@@ -1,13 +1,13 @@
 
 import React from 'react';
 
-export const GlobalContext = React.createContext<IContextState>(undefined as any);
+export const ScreenContext = React.createContext<IContextState>(undefined as any);
 
 interface IContextState {
     screenInnerWidth: number
 }
-export let setRedirect: (url: string) => void;
-export default class GlobalProvider extends React.Component<{}, IContextState>{
+
+export default class ScreenProvider extends React.Component<any, IContextState>{
     constructor(props: any) {
         super(props);
         this.state = {
@@ -20,13 +20,13 @@ export default class GlobalProvider extends React.Component<{}, IContextState>{
     }
     render() {
         return (
-            <GlobalContext.Provider value={
+            <ScreenContext.Provider value={
                 {
                     screenInnerWidth: this.state.screenInnerWidth
                 }
             }>
                 {this.props.children}
-            </GlobalContext.Provider>
+            </ScreenContext.Provider>
         )
     }
 }

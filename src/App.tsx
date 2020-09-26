@@ -1,34 +1,35 @@
 import 'bootstrap/dist/css/bootstrap.min.css';
 import React from 'react';
-import { BrowserRouter as Router, Route, Switch, Redirect, Link, HashRouter } from 'react-router-dom';
+import { BrowserRouter as Router, Route, Switch } from 'react-router-dom';
 import './App.css';
-import AdminPage from './pages/admin/admin-page';
-import GlobalProvider, { setRedirect, GlobalContext } from './contexts/global-context';
+import ScreenProvider from './contexts/screen-context';
 import LoginPage from './pages/admin/admin-login';
-import authentication from './admin-auth';
 import AdminLogout from './pages/admin/admin-logout';
+import AdminPage from './pages/admin/admin-page';
 
-function App() {
+export function App() {
   return (
-    <GlobalProvider>
-      <Router getUserConfirmation={(a, b) => {
-        console.log(a, b);
-      }}>
+    <ScreenProvider>
+      <Router>
         <div className="App">
+          <input type="text" style={{position: 'fixed', top: -99}} id="lost-focus"></input>
           <Switch>
-            <Route exact path="/admin/login" > <LoginPage /> </Route>
-            <Route exact path="/admin/logout">{authentication.logout}</Route>
-            <Route path="/admin" component={AdminPage} onEnter={() => { window.location.href = '/' }}/>
+            <Route exact path="/admin/login" component={LoginPage}></Route>
+            <Route exact path="/admin/logout" render={() => {
+              return <AdminLogout />;
+            }}></Route>
+            <Route path="/admin" component={AdminPage} />
             <Route path="/"><NotFound></NotFound></Route>
           </Switch>
         </div>
       </Router >
-    </GlobalProvider>
+    </ScreenProvider>
   );
 }
-
 function NotFound() {
-  return <h2>Not Found this Page</h2>;
+  return (<div>
+    <h2>Not Found this Page</h2>
+  </div>);
 }
+ 
 
-export default App;

@@ -21,14 +21,11 @@ export default class MenuTab extends React.Component<MenuTabProps, MenuTabState>
         super(props);
         this.menu = React.createRef();
     }
-    componentDidMount(){
-        (window as any).menu = this.menu.current;
-    }
     renderItem(itemMenu: MenuType | MenuItem): JSX.Element {
         if ((itemMenu as Object).hasOwnProperty('items')) {
             return <li key={++count}>
                 <MenuDropDown title={(itemMenu as MenuType).content}>
-                    {(itemMenu as MenuType).items.map(item => { return this.renderItem(item) })}
+                    { (itemMenu as MenuType).items.map(item => { return this.renderItem(item) }) }
                 </MenuDropDown>
             </li >;
         } else {
@@ -45,7 +42,7 @@ export default class MenuTab extends React.Component<MenuTabProps, MenuTabState>
     render() {
         count = 0;
         return <div id="menu-tab" ref={this.menu}>
-            <ul>{this.props.menu.map(item => { return this.renderItem(item); })}</ul>
+            <ul>{this.props.menu.map(item => { return this.renderItem(item); })}</ul>            
         </div>
     }
 }
