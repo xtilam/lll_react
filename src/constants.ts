@@ -1,7 +1,6 @@
 
 const SYSTEM_CONSTANTS = {
     ERROR_REQUEST: {
-        TOKEN_INVALID: -1,
         PERMISSION_NOT_ALLOW: -2,
         PAGE_OUT_INDEX: 2,
         FAILED: 1

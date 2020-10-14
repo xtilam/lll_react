@@ -132,7 +132,7 @@ export default class AdminUserPage extends React.Component<any, AdminUserPageSta
             }
         }
         >
-            <td>{index + 1}</td>
+            <td>{index + 1}</td> 
             <td><WCheckBox className="user-checkbox" onChange={(evt) => {
                 let index = this.idsSelected.indexOf(user.id);
                 if (index !== -1) this.idsSelected.splice(index, 1);
@@ -141,7 +141,7 @@ export default class AdminUserPage extends React.Component<any, AdminUserPageSta
             <td>
                 <ImageError
                     src={(process.env.REACT_APP_ADMIN_USER_IMAGE_PATH || '') + user.id + '.jpg'}
-                    err-src={(process.env.REACT_APP_ADMIN_USER_IMAGE_PATH || '') + '/default.jpg'} />
+                    err-src={(process.env.REACT_APP_ADMIN_USER_IMAGE_PATH || '') + 'default.jpg'} />
             </td>
             <td>{user.adminCode}</td>
             <td>{user.fullname}</td>

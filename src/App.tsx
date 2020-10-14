@@ -1,6 +1,6 @@
 import 'bootstrap/dist/css/bootstrap.min.css';
 import React from 'react';
-import { BrowserRouter as Router, Route, Switch } from 'react-router-dom';
+import { BrowserRouter as Router, Link, Route, Switch } from 'react-router-dom';
 import './App.css';
 import ScreenProvider from './contexts/screen-context';
 import LoginPage from './pages/admin/admin-login';
@@ -29,6 +29,7 @@ export function App() {
 function NotFound() {
   return (<div>
     <h2>Not Found this Page</h2>
+    <h2><Link to="/admin" children="Go to Admin Page :)"/></h2>
   </div>);
 }
  

@@ -7,7 +7,7 @@ import CancelSVG from "../../logo-svg/cancel";
 interface AdminMessageRequestProps extends React.HTMLAttributes<HTMLElement> {
     message?: string,
     is_hide?: boolean,
-    onAfterSendRequest?: () => any,
+    callback_after_send_request?: () => any,
     onBeforeSendRequest?: () => any,
 }
 interface AdminMessageRequestState {
@@ -47,15 +47,16 @@ export default class AdminMessageRequest extends React.Component<AdminMessageReq
                 switch (err.message.code) {
                     case undefined:
                         request = undefined;
+                        console.log(err.response);
                         if (err.response === undefined) {
                             state.message = 'Kêt nối hỏng';
+                        } else if (err.response.status === 403 && err.response.data.error === "Forbidden") {
+                            setTimeout(() => { authentication.logout() }); break;
                         } else {
                             state.message = "Lỗi server: " + err.response.data.message;
                         };
                         break;
-                    case SYSTEM_CONSTANTS.ERROR_REQUEST.TOKEN_INVALID:
-                        setTimeout(() => { authentication.logout() }); break;
-                    case SYSTEM_CONSTANTS.ERROR_REQUEST.PERMISSION_NOT_ALLOW:
+                    // case SYSTEM_CONSTANTS.ERROR_REQUEST.PERMISSION_NOT_ALLOW:
                     default:
                         let data = err.data instanceof Object
                             ? '- ' + JSON.stringify(err.data) :
@@ -67,37 +68,21 @@ export default class AdminMessageRequest extends React.Component<AdminMessageReq
             }
         }
         await this.setState(() => { return state });
-        this.props.onAfterSendRequest && this.props.onAfterSendRequest();
+        this.props.callback_after_send_request && this.props.callback_after_send_request();
         return request;
     }
     setMessage(message: { color?: string, message?: string, isHide?: boolean }): any {
         this.setState(message as any);
     }
-    shouldComponentUpdate(nextProp: any, nextState: any) {
-        if (nextProp === this.props) {
-            return true;
-        } else {
-            let state: any = {};
-            if (nextProp.hasOwnProperty('is_hide')) state.isHide = nextProp.is_hide;
-            if (nextProp.hasOwnProperty('message')) state.message = nextProp.message;
-            if (nextProp.hasOwnProperty('color')) state.color = nextProp.color;
-            this.setState(state);
-            return false;
-        }
-    }
     closeMessage() {
         this.setState({ isHide: true });
     }
     render() {
-        return this.state.isHide ? null : React.createElement('div',
-            {
-                ... this.props, is_hide: undefined,
-                className: this.props.className ?? ''
-                    + `alert d-flex ${(this.state.color ? `alert-${this.state.color} ` : '')}`, message: undefined
-            }, [
-            <span key="0" className={"mr-auto" + (this.state.isWaitRequest ? ' loading-text' : '')}>{this.state.message}</span>,
+        return this.state.isHide ? null : <div className={`alert d-flex ${(this.state.color ? `alert-${this.state.color} ` : '')}`}>
+            <span key="0" className={"mr-auto mb-1 " + (this.state.isWaitRequest ? ' loading-text' : '')}>{this.state.message}</span>,
             <CancelSVG key="1" className="icon" color="red" style={{ minWidth: 16 }} onClick={() => { this.setState({ isHide: true }) }} />
-        ]
-        )
+        </div>
+
+
     }
 }

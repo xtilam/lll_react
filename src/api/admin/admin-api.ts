@@ -52,8 +52,8 @@ const AdminUserAPI = {
     resetPasswordUser: (userId: number, password: string) => {
         return axiosClient.put('/admin/admin-user/reset-password', {userId: userId, password: password});
     },
-    getAllGroups: (adminCode: string)=>{
-        return axiosClient.get('/admin/admin-user/groups', {params: {adminCode: adminCode}});
+    getAllGroups: (userId: number)=>{
+        return axiosClient.get('/admin/admin-user/groups', {params: {id: userId}});
     },
     updateAdminGroups: (data: {adminId: number, groupIds: number[]})=>{
         return axiosClient.put('/admin/admin-user/groups', data);

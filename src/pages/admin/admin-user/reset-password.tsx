@@ -7,7 +7,7 @@ import AdminMessageRequest from "../../../page-component/admin/admin-message-req
 
 interface AdminResetPasswordProps {
     adminInfo: AdminUserResult,
-    adminMessageRequest: AdminMessageRequest
+    adminMessageRequest: ()=>AdminMessageRequest
 }
 interface AdminResetPasswordState {
     passwordInput: string,
@@ -23,7 +23,7 @@ export default class AdminResetPassword extends React.Component<AdminResetPasswo
     }
     update(evt: any) {
         evt.preventDefault();
-        this.props.adminMessageRequest.sendRequest(() => {
+        this.props.adminMessageRequest().sendRequest(() => {
             return AdminUserAPI.resetPasswordUser(this.props.adminInfo.id, this.state.passwordInput);
         })
     }

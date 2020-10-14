@@ -13,11 +13,8 @@
         object-fit: cover;
     }
     .table-control {
-        > *{
-            margin: 0 10px;
-        }
         .input-group {
-            width: auto;
+            width: fit-content !important;
         }
         .offset-info{
             border-bottom: 2px solid #555;

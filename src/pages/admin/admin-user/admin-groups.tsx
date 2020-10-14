@@ -10,7 +10,7 @@ import AdminMessageRequest from "../../../page-component/admin/admin-message-req
 
 interface UpdateGroupsProps {
     adminInfo: AdminUserResult,
-    adminMessageRequest: AdminMessageRequest
+    adminMessageRequest: ()=>AdminMessageRequest
 }
 interface UpdateGroupsState {
     justShowSelected: boolean,
@@ -39,8 +39,8 @@ export default class UpdateGroups extends React.Component<UpdateGroupsProps, Upd
     }
     async getAllGroup() {
         await this.setState({isWaiting: true});
-        let result = await this.props.adminMessageRequest.sendRequest(() => {
-            return AdminUserAPI.getAllGroups(this.props.adminInfo.adminCode);
+        let result = await this.props.adminMessageRequest().sendRequest(() => {
+            return AdminUserAPI.getAllGroups(this.props.adminInfo.id);
         }, { hideWhenDone: true });
         this.groupsSelected.clear();
         if (result !== undefined) {
@@ -62,7 +62,7 @@ export default class UpdateGroups extends React.Component<UpdateGroupsProps, Upd
     }
     async updateGroups() {
         
-        this.props.adminMessageRequest.sendRequest(()=>{
+        this.props.adminMessageRequest().sendRequest(()=>{
             return AdminUserAPI.updateAdminGroups({adminId: this.props.adminInfo.id, groupIds: Utils.setToArray(this.groupsSelected)});
         })
     }

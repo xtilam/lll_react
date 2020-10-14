@@ -1,0 +1,14 @@
+.list-select {
+    .wcheckbox.select {
+        width: 25px;
+        height: 25px;
+    }
+    .table th:nth-child(1),
+    .table td:nth-child(1) {
+        text-align: center;
+    }
+    .table td:nth-child(2) > label,
+    .table th:nth-child(2) > label {
+        margin: auto;
+    }
+}

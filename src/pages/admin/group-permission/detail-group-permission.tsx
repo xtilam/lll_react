@@ -112,13 +112,13 @@ export default class DetailGroupPermission extends React.Component<DetailGroupPe
                                         </div>
                                     }
                                     { viewAction === 'update-group' && <UpdateGroupInfo
-                                        adminMessageRequest={this.adminMessageRequest.current as any}
+                                        adminMessageRequest={()=>(this.adminMessageRequest.current as any)}
                                         groupInfo={this.state.groupInfo}
                                         onUpdateSuccess={() => { this.setState({ nextUpdate: true }) }}
                                     />}
                                     { viewAction === 'update-permissions' && <UpdateGroupPermission
                                         id={this.state.groupInfo.id}
-                                        adminMessageRequest={this.adminMessageRequest.current as any} />}
+                                        adminMessageRequest={()=>(this.adminMessageRequest.current as any)} />}
                                 </div>
                             ) : <div className="d-flex space-sm">
                                     <Button color="primary" size="sm" onClick={this.getGroup.bind(this)}>Tải lại</Button>

@@ -25,12 +25,10 @@ export default PermissionAPI;
 export interface PermissionAPIResult {
     createBy: string | undefined,
     code: string | undefined,
-    method: string | undefined,
     name: string | undefined,
     modifiedDate: string | undefined,
     description: string | undefined,
     modifiedBy: string | undefined,
-    api: string | undefined,
     id: string & number & undefined,
     createDate: string | undefined,
 }
@@ -39,7 +37,5 @@ export interface PermissionDTO {
     id?: string | undefined,
     permissionCode?: string | undefined,
     description?: string | undefined,
-    api?: string | undefined,
     name?: string | undefined,
-    method?: string | undefined
 }

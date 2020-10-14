@@ -112,8 +112,8 @@ export default class ViewBook extends React.Component<any, ViewBookState>{
                 evt.currentTarget.checked && this.idsSelected.push(data?.id as number);
             }} checked={this.state.isSelectedAll} /></td>
             <td><ImageError className="no-round"
-                src={`${process.env.REACT_APP_BOOK_IMAGE_PATH}${data.id}.png`}
-                err-src={`${process.env.REACT_APP_BOOK_IMAGE_PATH}default.png`} /></td>
+                src={`${process.env.REACT_APP_BOOK_IMAGE_PATH}${data.id}.jpg`}
+                err-src={`${process.env.REACT_APP_BOOK_IMAGE_PATH}default.jpg`} /></td>
             <td>{data.title}</td>
             <td>{data.isbn}</td>
             <td>{data.authors?.map((item) => { return item.name }).join(', ')}</td>

@@ -1,9 +1,9 @@
 
 import React from "react";
-import { Button } from "reactstrap";
+import { Button, Col, Container, Row } from "reactstrap";
 import Utils from "../common/Utils";
 import ReloadSVG from "../logo-svg/reload";
-import AdminMessageRequest from "../page-component/admin/admin-message-request";
+import './list-select.scss';
 import WCheckBox from "./wcheckbox";
 import WInput, { WInputOther } from "./winput";
 
@@ -16,7 +16,8 @@ interface ListSelectProps {
     getKey: (data: any) => any,
     getAllow?: (data: any) => boolean,
     onComplete: (data: any) => any
-    valueSelected?: any
+    valueSelected?: any,
+    textOnCompleteButton?: string
 }
 interface ListSelectState {
     justShowSelected: boolean,
@@ -31,7 +32,6 @@ export default class ListSelect extends React.Component<ListSelectProps, ListSel
     }
     searchValue: string = '';
     valueSelected: any = {};
-    adminMessageRequest = React.createRef<AdminMessageRequest>();
     isFirstRender = false;
 
     private isSelectAll = false;
@@ -63,7 +63,7 @@ export default class ListSelect extends React.Component<ListSelectProps, ListSel
         if (this.searchValue) {
             let filter;
             if (this.props.filter && (filter = this.props.filter[typeSearch as any])) {
-                this.props.filter.data = this.searchValue;
+                
             } else {
                 filter = Utils.filterString(this.searchValue, (data) => { return data[typeSearch as string] || '' });
             }
@@ -74,6 +74,7 @@ export default class ListSelect extends React.Component<ListSelectProps, ListSel
     }
     async getData() {
         await this.setState({ isWaiting: true });
+        Utils.lostFocus();
         let result = await this.props.getData();
         if (result !== undefined) {
             this.isFirstRender = true;
@@ -95,39 +96,40 @@ export default class ListSelect extends React.Component<ListSelectProps, ListSel
     render() {
         let { isWaiting, filter } = this.state;
         let valueSelect: any = {}; // lọc ra các phần tử không tồn tại
-        return <div>
-            <style children={
-                [
-                    '.table th:nth-child(1), .table td:nth-child(1){text-align: center}',
-                    '.table td:nth-child(2) > label, .table th:nth-child(2) > label{ margin: auto}'
-                ]} />
-            <div className="d-flex justify-content-between align-items-center">
-                <div className="d-flex space-sm">
-                    <Button color="primary" onClick={this.getData.bind(this)} title="reload" size="sm">
-                        <ReloadSVG color="white" className={'icon ' + (isWaiting ? 'spin' : '')} />
-                    </Button>
-                    <Button onClick={this.updatePermissions.bind(this)} color="primary" size="sm" children="OK" />
-                    <Button onClick={this.toggleSelectAll.bind(this)} color={this.isSelectAll ? 'danger' : 'primary'} size="sm" children={this.isSelectAll ? 'Hủy chọn tất cả' : 'Chọn tất cả'} />
-                </div>
-                <div className="d-flex space-sm">
-                    <WInput title_input="Tìm kiếm" onChange={this.changeFilter.bind(this)} ref={this.refComponent.searchValue as any} />
-                    <WInputOther title_input="Loại">
-                        <select ref={this.refComponent.typeSearch} onChange={this.changeFilter.bind(this)}>
-                            {this.props.typeSearch.map((type, index) => {
-                                return <option key={index} value={type.propertySearch}>{type.viewSearch}</option>
-                            })}
-                        </select>
-                    </WInputOther>
-                </div>
-            </div>
-            <table className="table">
+        return <div className={`list-select ${this.state.isWaiting ? 'disabled' : ''}`} >
+            <Container fluid={true} className="my-2 px-0">
+                <Row>
+                    <Col sm={12} md={6} className="d-flex align-items-center mr-auto">
+                        <div className="d-flex space-sm">
+                            <Button color="primary" onClick={this.getData.bind(this)} title="reload" size="sm">
+                                <ReloadSVG color="white" className={'icon ' + (isWaiting ? 'spin' : '')} />
+                            </Button>
+                            <Button onClick={this.updatePermissions.bind(this)} color="primary" size="sm" children={this.props.textOnCompleteButton || 'OK'} />
+                            <Button onClick={this.toggleSelectAll.bind(this)} color={this.isSelectAll ? 'danger' : 'primary'} size="sm" children={this.isSelectAll ? 'Hủy chọn tất cả' : 'Chọn tất cả'} />
+                        </div>
+                    </Col>
+                    <Col sm={12} md={5}>
+                        <div className="d-flex space-sm ">
+                            <WInput title_input="Tìm kiếm" onChange={this.changeFilter.bind(this)} ref={this.refComponent.searchValue as any} />
+                            <WInputOther title_input="Loại">
+                                <select ref={this.refComponent.typeSearch} onChange={this.changeFilter.bind(this)}>
+                                    {this.props.typeSearch.map((type, index) => {
+                                        return <option key={index} value={type.propertySearch}>{type.viewSearch}</option>
+                                    })}
+                                </select>
+                            </WInputOther>
+                        </div>
+                    </Col>
+                </Row>
+            </Container>
+            <table className="table table-hover">
                 <thead>
                     <tr>
                         <th>#</th>
                         <th>
-                            <WCheckBox checked={this.state.justShowSelected} onChange={(evt) => { this.setState({ justShowSelected: evt.currentTarget.checked }) }} />
+                            <WCheckBox className="select" checked={this.state.justShowSelected} onChange={(evt) => { this.setState({ justShowSelected: evt.currentTarget.checked }) }} />
                         </th>
-                        {this.props.header}
+                        <React.Fragment key="12" children={this.props.header}/>
                     </tr>
                 </thead>
                 <tbody ref={this.tableRef}>
@@ -141,7 +143,7 @@ export default class ListSelect extends React.Component<ListSelectProps, ListSel
                             }
                             if (
                                 (!this.state.justShowSelected || dataExits)
-                                && (filter ? filter.filter(data) : true)
+                                && (filter instanceof Function ? filter(data) : true)
                             ) {
                                 return <tr key={key}>
                                     <td>{index + 1}</td>

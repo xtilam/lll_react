@@ -7,7 +7,7 @@ import AdminMessageRequest from "../../../page-component/admin/admin-message-req
 
 interface UpdatePermissionProps {
     permissionInfo: PermissionAPIResult,
-    adminMessageRequest: AdminMessageRequest,
+    adminMessageRequest: () => AdminMessageRequest,
     onUpdateSuccess?: () => any
 }
 interface UpdatePermissionState {
@@ -29,7 +29,7 @@ export default class UpdatePermission extends React.Component<UpdatePermissionPr
         evt.preventDefault();
         let data = this.form.current?.getData();
         data.id = this.props.permissionInfo.id;
-        this.props.adminMessageRequest.sendRequest(() => { return PermissionAPI.updatePermission(data) })
+        this.props.adminMessageRequest().sendRequest(() => { return PermissionAPI.updatePermission(data) })
             .then((result) => { result !== undefined && this.props.onUpdateSuccess && this.props.onUpdateSuccess() });
     }
     render() {
@@ -37,18 +37,7 @@ export default class UpdatePermission extends React.Component<UpdatePermissionPr
             <WForm ref={this.form as any} onSubmit={this.update.bind(this)}>
                 <h2>Cập nhật chức năng {this.props.permissionInfo.name}</h2>
                 <br />
-                <WInput title_input="Tên chức năng" name="name" required/>
-                <div className="d-flex space-nm">
-                    <WInput title_input="Đường dẫn API" name="api" required/>
-                    <WInputOther title_input="Phương thức" children={
-                        <select className="input" name="method" >
-                            <option value="GET">GET</option>
-                            <option value="POST">POST</option>
-                            <option value="PUT">PUT</option>
-                            <option value="DELETE">DELETE</option>
-                        </select>
-                    } />
-                </div>
+                <WInput title_input="Tên chức năng" name="name" required />
                 <WInputOther title_input="Mô tả">
                     <textarea rows={4} name="description" />
                 </WInputOther>

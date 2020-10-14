@@ -20,11 +20,7 @@ export default class ScreenProvider extends React.Component<any, IContextState>{
     }
     render() {
         return (
-            <ScreenContext.Provider value={
-                {
-                    screenInnerWidth: this.state.screenInnerWidth
-                }
-            }>
+            <ScreenContext.Provider value={this.state}>
                 {this.props.children}
             </ScreenContext.Provider>
         )

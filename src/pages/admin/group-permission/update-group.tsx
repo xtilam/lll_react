@@ -8,7 +8,7 @@ import AdminMessageRequest from "../../../page-component/admin/admin-message-req
 
 interface UpdateGroupInfoProps {
     groupInfo: GroupPermissionAPIResult,
-    adminMessageRequest: AdminMessageRequest,
+    adminMessageRequest: ()=>AdminMessageRequest,
     onUpdateSuccess?: () => any
 }
 interface UpdateGroupInfoState {
@@ -26,7 +26,7 @@ export default class UpdateGroupInfo extends React.Component<UpdateGroupInfoProp
     update(evt: any) {
         evt.preventDefault();
         let data = this.form.current?.getData();
-        this.props.adminMessageRequest.sendRequest(() => { return GroupPermissionAPI.updateGroup(data) })
+        this.props.adminMessageRequest().sendRequest(() => { return GroupPermissionAPI.updateGroup(data) })
             .then((result) => { result !== undefined && this.props.onUpdateSuccess && this.props.onUpdateSuccess() });
     }
     render() {

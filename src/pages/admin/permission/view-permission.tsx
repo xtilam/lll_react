@@ -54,8 +54,8 @@ export default class ViewPermission extends React.Component<any, ViewPermissionS
                                         e.checked !== isSelectedAll && e.click();
                                     });
                             }} />,
+                            'Mã CN',
                             'Tên CN',
-                            'Request',
                             'Cập nhật',
                             <div className="text-center">Chi tiết</div>
                         ]}
@@ -109,8 +109,8 @@ export default class ViewPermission extends React.Component<any, ViewPermissionS
                 if (index !== -1) this.idsSelected.splice(index, 1);
                 evt.currentTarget.checked && this.idsSelected.push(data?.id);
             }} checked={this.state.isSelectedAll} /></td>
+            <td>{data.code}</td>
             <td>{data.name}</td>
-            <td>{`${data.api} -> ${data.method}`}</td>
             <td title={`Cập nhât: ${data.modifiedBy} - ${moment(data.modifiedDate).calendar()}\nKhởi tạo: ${data.createBy} - ${moment(data.createDate).calendar()}`
             }>{data.modifiedBy}</td>
             <td className="text-center">

@@ -24,9 +24,12 @@ ReactDOM.render(
 })();
 
 (window as any).loginDefault = () => {
-  window.localStorage.token = 'eyJhbGciOiJIUzUxMiJ9.eyJ0b2tlbklkIjozMDkyNjc4MjQxMTcxNDU1LCJhZG1pbklkIjo1NzE3NDc5MzkzNTYwMDUsImFkbWluQ29kZSI6Ik5WQyIsImV4cCI6MTkxMzU2MjYxOCwiaWF0IjoxNTk4MjAyNjE4fQ.VYT-aBPMcQtc2W67K-i5PLGyp6jEXTvV9zY7du0gZ_PbH4Qj3FDy0QzQEmLxIMhjYEAtKDZd_CuLRfHOjAvkig';
+  window.localStorage.token = 'eyJhbGciOiJIUzUxMiJ9.eyJjb2RlIjoiTlZDIiwidG9rZW5JZCI6NDAxOTkwNDQ2NjY3NDcxNCwiaWQiOjU3MTc0NzkzOTM1NjAwNSwiZXhwIjoxOTE3NjA0MzQxLCJpYXQiOjE2MDIyNDQzNDF9.lj8B8Nmt1rkZ7NLc2vRpWDbjz5q0KuK1j7kEuSCied9oFf2I6bXZa-pPrmjQPzyoVu4NN5fpvlZIeEBUj9hBAg';
 }
-
+(window as any).accs = function accs(value: string){
+  console.log(value);
+  console.log(this);
+}
 // If you want your app to work offline and load faster, you can change
 // unregister() to register() below. Note this comes with some pitfalls.
 // Learn more about service workers: https://bit.ly/CRA-PWA

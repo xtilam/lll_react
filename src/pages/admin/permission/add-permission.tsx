@@ -25,8 +25,6 @@ export default class AddPermission extends React.Component<any, AddPermissionSta
             input: {
                 permissionCode: "ACTION_0",
                 description: '.',
-                method: "GET",
-                api: "/api/admin/",
                 name: "NAME_"
             },
             isValidInput: {
@@ -58,17 +56,6 @@ export default class AddPermission extends React.Component<any, AddPermissionSta
             <WForm className={this.state.isDisable ? 'disabled' : ''} onSubmit={this.onSubmit.bind(this)}>
                 <WInput title_input="Mã chức năng" value={input.permissionCode} is_invalid={!isValidInput.permissionCode} name="permissionCode" onChange={this.setInputOnChange.bind(this)}  required/>
                 <WInput title_input="Tên chức năng" value={input.name} name="name" onChange={this.setInputOnChange.bind(this)} required/>
-                <div className="d-flex space-nm">
-                    <WInput title_input="Đường dẫn API" value={input.api} name="api" onChange={this.setInputOnChange.bind(this)} required/>
-                    <WInputOther title_input="Phương thức" children={
-                        <select className="input" value={input.method} name="method" onChange={this.setInputOnChange.bind(this)}>
-                            <option value="GET">GET</option>
-                            <option value="POST">POST</option>
-                            <option value="PUT">PUT</option>
-                            <option value="DELETE">DELETE</option>
-                        </select>
-                    } />
-                </div>
                 <WInputOther title_input="Mô tả">
                     <textarea rows={4} value={input.description} name="description" onChange={this.setInputOnChange.bind(this)} />
                 </WInputOther>

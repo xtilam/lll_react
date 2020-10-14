@@ -3,7 +3,9 @@ import React from "react";
 import { Link } from "react-router-dom";
 import { Button } from "reactstrap";
 import PermissionAPI, { PermissionAPIResult } from "../../../api/admin/permission-api";
+import ReloadSVG from "../../../logo-svg/reload";
 import AdminMessageRequest from "../../../page-component/admin/admin-message-request";
+import DetailAdminPage from "../../../page-component/admin/menu-detail";
 import UpdatePermission from "./update-permission";
 
 interface DetailPermissionProps {
@@ -15,139 +17,113 @@ interface DetailPermissionProps {
 }
 interface DetailPermissionState {
     permissionInfo: PermissionAPIResult,
-    viewAction: 'view-info' | 'update-permission' | 'change-password',
-    isDisable: boolean,
     isNotFoundResult: boolean,
-    nextUpdate: boolean
 }
 export default class DetailPermission extends React.Component<DetailPermissionProps, DetailPermissionState>{
-    adminMessageRequest: React.RefObject<AdminMessageRequest> = React.createRef();
+    detailPage = React.createRef<DetailAdminPage>();
+    nextUpdate = false;
 
     constructor(props: any) {
         super(props);
         this.state = {
             permissionInfo: {} as any,
-            isDisable: false,
-            isNotFoundResult: false,
-            nextUpdate: false,
-            viewAction: 'view-info'
+            isNotFoundResult: false
         }
     }
     componentDidMount() {
         this.getPermission();
     }
-    menuClickEvent(evt: React.MouseEvent<HTMLLIElement, MouseEvent>) {
-        let target = evt.currentTarget;
-        this.setState({ viewAction: target.getAttribute('view-action') as any });
-        this.adminMessageRequest.current?.closeMessage();
-    }
-    async componentDidUpdate() {
-        if (this.state.nextUpdate && this.state.viewAction === 'view-info') {
-            await this.setState({ nextUpdate: false });
-            this.getPermission();
+    updateInfo() {
+        if (this.nextUpdate) {
+            this.nextUpdate = false;
+            setTimeout(() => {
+                this.getPermission();
+            })
         }
+    }
+    renderMenu(menu: JSX.Element) {
+        if (!this.state.isNotFoundResult) {
+            return menu;
+        } else {
+            return <div className="d-flex space-sm">
+                <Button color="primary" size="sm" onClick={this.getPermission.bind(this)}><ReloadSVG color="white" className="icon" /> Tải lại</Button>
+            </div>
+        }
+    }
+    getAdminMessageReq(): AdminMessageRequest {
+        return this.detailPage.current?.adminMessageRequest.current as any
     }
     render() {
-        let { viewAction, permissionInfo } = this.state;
-        let btnGoBack = this.props.goBack
-            ? <div onClick={
-                () => { window.history.replaceState('', '', this.props.goBack?.oldLocation); this.props.goBack?.action(); }
-            }> Trở về</div >
-            : <Link to="/admin/permissions">Trở về</Link>;
-        return (
-            <div className={`menu-select-layout ${this.state.isDisable ?  'disabled' : ''}`} style={{ height: '100%' }}>
-                <div className="menu-select">
-                    <ul>
-                        <li className="bg-danger text-white"
-                            onClick={(evt) => {
-                                let firstChild = evt.currentTarget.firstChild; firstChild && (firstChild as any).click();
-                            }}>{btnGoBack}</li>
-                        <li className={viewAction === 'view-info' ? 'active' : ''} view-action="view-info" onClick={this.menuClickEvent.bind(this)}>Xem thông tin</li>
-                        <li className={viewAction === 'update-permission' ? 'active' : ''} view-action="update-permission" onClick={this.menuClickEvent.bind(this)}>Cập nhật thông tin</li>
-                    </ul>
-                </div>
-                <div className="child-content">
-                    <div className={`form-container`}>
-                        <AdminMessageRequest ref={this.adminMessageRequest} />
-                        {
-                            !this.state.isNotFoundResult ? (
-                                <div>
-                                    { viewAction === "view-info"
-                                        && <div>
-                                            <div className="d-flex justify-content-between">
-                                                <h2>Thông tin Chức năng {this.state.permissionInfo.name}</h2>
-                                            </div>
-                                            <br />
-                                            <table className="table wtable-info">
-                                                <tbody>
-                                                    <tr>
-                                                        <td>ID</td>
-                                                        <td>{permissionInfo.id}</td>
-                                                    </tr>
-                                                    <tr>
-                                                        <td>Mã Chức năng</td>
-                                                        <td>{permissionInfo.code}</td>
-                                                    </tr>
-                                                    <tr>
-                                                        <td>Đường dẫn</td>
-                                                        <td>{permissionInfo.api}</td>
-                                                    </tr>
-                                                    <tr>
-                                                        <td>Phương thức</td>
-                                                        <td>{permissionInfo.method}</td>
-                                                    </tr>
-                                                    <tr>
-                                                        <td>Khởi tạo</td>
-                                                        <td><Link to={`/admin/admin-user/detail?adminCode=${permissionInfo.modifiedBy}`}>{permissionInfo.modifiedBy}</Link> - {moment(permissionInfo.modifiedDate).calendar()}</td>
-                                                    </tr>
-                                                    <tr>
-                                                        <td>Cập nhật</td>
-                                                        <td><Link to={`/admin/admin-user/detail?adminCode=${permissionInfo.createBy}`}>{permissionInfo.createBy}</Link> - {moment(permissionInfo.createDate).calendar()}</td>
-                                                    </tr>
-                                                    <tr>
-                                                        <td>Mô tả</td>
-                                                        <td>{permissionInfo.description}</td>
-                                                    </tr>
-                                                </tbody>
-                                            </table>
-                                        </div>
-                                    }
-                                    { viewAction === 'update-permission' && <UpdatePermission
-                                        adminMessageRequest={this.adminMessageRequest.current as any}
-                                        permissionInfo={this.state.permissionInfo}
-                                        onUpdateSuccess={() => { this.setState({ nextUpdate: true }) }}
-                                    />}
-                                </div>
-                            ) : <div className="d-flex space-sm">
-                                    <Button color="primary" size="sm" onClick={this.getPermission.bind(this)}>Tải lại</Button>
-                                    {btnGoBack}
-                                </div>
-                        }
-                    </div>
-                </div>
-            </div>
-        )
-    }
-    updatePermission() {
-        // this.editForm.current?.update(this.adminMessageRequest.current as any);
+        let { permissionInfo } = this.state;
+        let goBack = this.props.goBack
+            ? () => { window.history.replaceState('', '', this.props.goBack?.oldLocation); this.props.goBack?.action(); }
+            : '/admin/permissions';
+
+        return <DetailAdminPage
+            ref={this.detailPage}
+            goBackAction={goBack}
+            menuConfig={[
+                {
+                    name: "Xem thông tin",
+                    callback: this.updateInfo.bind(this),
+                    body: this.renderMenu(<div>
+                        <div className="d-flex justify-content-between">
+                            <h2><strong>Chức năng </strong>{this.state.permissionInfo.name}</h2>
+                        </div>
+                        <br />
+                        <table className="table wtable-info">
+                            <tbody>
+                                <tr>
+                                    <td>ID</td>
+                                    <td>{permissionInfo.id}</td>
+                                </tr>
+                                <tr>
+                                    <td>Mã Chức năng</td>
+                                    <td>{permissionInfo.code}</td>
+                                </tr>
+                                <tr>
+                                    <td>Tên chức năng</td>
+                                    <td>{permissionInfo.name}</td>
+                                </tr>
+                                <tr>
+                                    <td>Khởi tạo</td>
+                                    <td><Link to={`/admin/admin-user/detail?adminCode=${permissionInfo.modifiedBy}`}>{permissionInfo.modifiedBy}</Link> - {moment(permissionInfo.modifiedDate).calendar()}</td>
+                                </tr>
+                                <tr>
+                                    <td>Cập nhật</td>
+                                    <td><Link to={`/admin/admin-user/detail?adminCode=${permissionInfo.createBy}`}>{permissionInfo.createBy}</Link> - {moment(permissionInfo.createDate).calendar()}</td>
+                                </tr>
+                                <tr>
+                                    <td>Mô tả</td>
+                                    <td>{permissionInfo.description}</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>)
+                },
+                {
+                    name: "Cập nhật CN",
+                    body: this.renderMenu(<UpdatePermission
+                        adminMessageRequest={this.getAdminMessageReq.bind(this)}
+                        permissionInfo={permissionInfo}
+                        onUpdateSuccess={() => { this.nextUpdate = true }}
+                    />)
+                }
+            ]}
+        />
     }
     async getPermission() {
-        await this.setState({ isDisable: true });
+        // find id
         let id = new URLSearchParams(window.location.search).get("id") || (this.props.goBack && this.props.goBack.id);
-        if (!id) {
-            this.setState({ isNotFoundResult: true, isDisable: false }); return;
+        if (id) {
+            window.history.replaceState('', '', `/admin/permission/detail?id=${id}`);
+            let resultReq = await this.getAdminMessageReq().sendRequest(() => { return PermissionAPI.getPermission(id as any) }, { hideWhenDone: true });
+            if (resultReq) {
+                let permissionInfo = resultReq.data;
+                await this.setState({ permissionInfo: permissionInfo });
+                return;
+            }
         }
-
-        window.history.replaceState('', '', `/admin/permission/detail?id=${id}`);
-
-        let resultReq = await this.adminMessageRequest.current?.sendRequest(() => { return PermissionAPI.getPermission(id as any) }, { hideWhenDone: true });
-
-        if (resultReq) {
-            let permissionInfo = resultReq.data;
-            console.log(permissionInfo);
-            await this.setState({ permissionInfo: permissionInfo, isDisable: false });
-        } else {
-            this.setState({ isNotFoundResult: true, isDisable: false });
-        };
+        this.setState({ isNotFoundResult: true });
     }
 }

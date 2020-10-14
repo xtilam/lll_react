@@ -6,12 +6,10 @@
 $headerHeight: 35px;
 $menuTabSize: 220px;
 
-#parent-layout {
-    height: 100%;
-}
 header {
-    position: relative;
-    z-index: 999999;
+    position: fixed;
+    top: 0;
+    z-index: 999;
     background-color: #ddd;
     width: 100%;
     padding: 5px;
@@ -28,11 +26,14 @@ div#app-body {
     > div#menu-tab {
         $itemTopSpace: 5px;
         width: $menuTabSize;
+        position: fixed;
+        top: $headerHeight;
         background-color: #ccc;
         height: 100%;
         padding: $itemTopSpace 0;
         overflow: auto;
-        min-width: $menuTabSize;
+        z-index: 200;
+        height: calc(100% - #{$headerHeight});
         * {
             overflow: hidden;
             text-overflow: ellipsis;
@@ -69,98 +70,26 @@ div#app-body {
             text-decoration: none;
         }
     }
-    > div#app-content {
+    > div.override-content {
         background-color: #eee;
         width: 100%;
         height: 100%;
         overflow: auto;
-        padding: 10px 15px;
-        position: relative;
-        > div.override-content{
-            position: absolute;
-            background-color: #eee;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            overflow: auto;
-            >*{
-                position: absolute;
-                padding: 20px 15px;
-                width: 100%;
-                height: 100%;
-                overflow: auto;
-            }
-        }
+        padding: 20px 15px;
+        position: fixed;
+        width: calc(100% - #{$menuTabSize});
+        height: calc(100% - #{$headerHeight});
+        top: $headerHeight;
+        left: $menuTabSize;
+    }
+    > div#app-content {
+        @extend div.override-content;
         table.wtable-info {
             width: 100%;
             > tbody > tr > td:nth-child(1) {
                 max-width: 70px;
                 font-weight: 600;
                 text-shadow: none;
-            }
-        }
-        .menu-select-layout {
-            display: flex;
-            position: absolute;
-            top: 0;
-            left: 0;
-            height: 100%;
-            width: 100%;
-            justify-content: space-between;
-            align-items: center;
-            > .menu-select {
-                width: 220px;
-                border: 1px #222 solid;
-                height: calc(100% - 20px);
-                list-style-type: none;
-                padding: 5px 5px;
-                box-shadow: 4px 4px #555;
-                overflow-y: auto;
-                margin-left: 10px;
-                > ul {
-                    padding: 0;
-                    > li {
-                        list-style-type: none;
-                        background-color: #fafafa;
-                        font-weight: 600;
-                        border-bottom: 1px solid #777;
-                        margin-bottom: 6px;
-                        padding: 4px 0 4px 12px;
-                        color: black;
-                        cursor: pointer;
-                        > * {
-                            width: 100%;
-                            display: block;
-                            color: unset;
-                        }
-                        a:hover {
-                            text-decoration: none;
-                        }
-                        &.active {
-                            box-shadow: inset -5px 0 rebeccapurple;
-                        }
-                        &:hover {
-                            opacity: 1;
-                            margin-bottom: 3px;
-                            border-bottom: 4px solid rebeccapurple;
-                            background-color: #fa1 !important;
-                            color: white !important;
-                            box-shadow: none;
-                        }
-                        &:active {
-                            opacity: 0.7;
-                        }
-                    }
-                }
-            }
-            > .child-content {
-                height: 100%;
-                overflow: auto;
-                width: calc(100% - 230px);
-                > * {
-                    max-height: 100%;
-                }
             }
         }
         #main-view {
@@ -173,7 +102,7 @@ div#app-body {
                 margin-top: 5px;
             }
         }
-        .default-view{
+        .default-view {
             max-width: 800px;
             width: 100%;
             margin: auto;
@@ -198,7 +127,6 @@ div#app-body {
             }
         }
     }
-    
 }
 div.dropdown-menu {
     margin: 8px 0 0 0;
@@ -230,7 +158,7 @@ div.dropdown-menu {
     }
 }
 
-@media screen and (max-width: 800px) {
+@media screen and (max-width: 1000px) {
     header {
         > #show-menu {
             display: block;
@@ -240,7 +168,7 @@ div.dropdown-menu {
     }
     #menu-tab {
         position: absolute;
-        z-index: 1;
+        z-index: 10;
         top: 0;
         left: $menuTabSize * -1;
     }
@@ -251,11 +179,30 @@ div.dropdown-menu {
             position: fixed;
             width: 100%;
             height: 100%;
-            background-color: rebeccapurple;
+            background-color: rgba($color: #000, $alpha: 0.9);
             opacity: 0.3;
             z-index: -1;
             top: $headerHeight;
             left: $menuTabSize;
+        }
+    }
+    div#app-body {
+        > div#app-content,
+        div.override-content {
+            width: 100%;
+            left: 0;
+        }
+    }
+}
+@media screen and (max-width: 500px) {
+    #menu-tab {
+        left: -100% !important;
+        width: 100% !important;
+    }
+    #menu-tab.is-display {
+        left: 0 !important;
+        &::before {
+            display: none;
         }
     }
 }

@@ -35,37 +35,43 @@ const Utils = {
         return { ...vnMap, ...mapLowCase, ...specialCharacter };
     })(),
     filterString: (value: string, getText: (value: any) => string) => {
-        return {
-            data: value.toLowerCase().split('')
-                .map((value) => {
-                    let newVal = Utils.mapValue[value];
-                    if (newVal) { return newVal; }
-                    return value;
-                }),
-            length: value.length,
-            map: Utils.mapValue,
-            getText: getText,
-            filter: function (data: any) {
-                let countIndex = 0;
-                let nextChar = this.data[countIndex];
-                for (let char of this.getText(data)) {
-                    if (countIndex !== this.length) {
-                        if (nextChar === char || this.map[char] === nextChar) {
-                            nextChar = this.data[++countIndex];
-                        }
-                    } else {
-                        break;
+        // Chuyển dữ liệu để không phải so sánh 2 lần
+        let textArray = value.toLowerCase().split('').map((value) => {
+            let newVal = Utils.mapValue[value];
+            if (newVal) { return newVal; }
+            return value;
+        });
+        let length = value.length;
+
+        return function (data: any) {
+            let countIndex = 0;
+            let nextChar = textArray[countIndex];
+            for (let char of getText(data)) {
+                if (countIndex !== length) {
+                    if (nextChar === char || Utils.mapValue[char] === nextChar) {
+                        nextChar = textArray[++countIndex];
                     }
+                } else {
+                    break;
                 }
-                return countIndex === this.length;
             }
+            return countIndex === length;
         }
     },
     setToArray: <K>(data: Set<K>): K[] => {
-        let result = new Array(data.size);        
+        let result = new Array(data.size);
         let index = 0;
         for (let value of data as any) {
             result[index++] = value;
+        }
+        return result;
+    },
+    makeId: (length: number): string => {
+        let result = '';
+        let characters = 'abcdefghijklmnopqrstuvwxyz';
+        let charactersLength = characters.length;
+        for (let i = 0; i < length; i++) {
+            result += characters.charAt(Math.floor(Math.random() * charactersLength));
         }
         return result;
     }

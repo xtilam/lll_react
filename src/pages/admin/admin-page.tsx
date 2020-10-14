@@ -1,3 +1,4 @@
+import { debug } from 'console';
 import React from 'react';
 import { Redirect, Route, Switch } from 'react-router-dom';
 import AdminAuthenticationProvider, { AdminAuthentication } from '../../contexts/admin-authencation';
@@ -34,8 +35,15 @@ const menu = [
     }
 ]
 
-export default class AdminPage extends React.Component {
+export default class AdminPage extends React.Component<{}, { isHideScroll: boolean }> {
     isClearWindow = true;
+    adminHeader = React.createRef<AdminHeader>();
+
+    constructor(props: any) {
+        super(props);
+        this.state = { isHideScroll: false };
+    }
+
     render() {
         this.isClearWindow = true;
         return (
@@ -45,10 +53,10 @@ export default class AdminPage extends React.Component {
                         {({ isLogin }) => {
                             return isLogin
                                 ? <div id="parent-layout">
-                                    <AdminHeader minScreenResizeMenuTab={800} />
-                                    <div id='app-body' style={{ height: 'calc(100% - 35px)', width: '100%', position: 'relative' }} className="d-inline-flex align-items-start">
-                                        <MenuTab menu={menu}></MenuTab>
-
+                                    <AdminHeader minScreenResizeMenuTab={500} ref={this.adminHeader} />
+                                    <div id='app-body' style={{ height: 'calc(100% - 35px)', width: '100%', position: 'relative' }}
+                                        className={`d-inline-flex align-items-start`}>
+                                        <MenuTab menu={menu} getAdminHeader={() => { return this.adminHeader.current as any }}></MenuTab>
                                         <div id='app-content'>
                                             <Switch>
                                                 <Route key={Math.random()} exact path="/admin" component={AdminUserPage}></Route>
@@ -65,22 +73,24 @@ export default class AdminPage extends React.Component {
                                                 <Route exact path="/admin/permission/add" component={AddPermission}></Route>
                                                 <Route exact path="/admin/groups" component={ViewGroupPermission}></Route>
                                             </Switch>
-                                            <AdminOverrideWindow.Consumer>
-                                                {({ windows, clear }) => {
-                                                    if (this.isClearWindow) {
-                                                        clear();
-                                                        this.isClearWindow = false;
-                                                        return null;
-                                                    } else {
-                                                        return windows.length > 0 ? (<div className="override-content">
-                                                            {windows.map((w, index) => {
-                                                                return <div style={{ zIndex: 100 + index }} children={w} />
-                                                            })}
-                                                        </div>) : null
-                                                    }
-                                                }}
-                                            </AdminOverrideWindow.Consumer>
                                         </div>
+                                        <AdminOverrideWindow.Consumer>
+                                            {({ windows, clear }) => {
+                                                if (this.isClearWindow) {
+                                                    if(windows.length > 0) clear();
+                                                    this.isClearWindow = false;
+                                                    return null;
+                                                } else {
+                                                    if (windows.length > 0) {
+                                                        return (
+                                                            <div className="override-content">
+                                                                {windows[0]}
+                                                            </div>
+                                                        )
+                                                    }
+                                                }
+                                            }}
+                                        </AdminOverrideWindow.Consumer>
                                     </div>
                                 </div >
                                 : <Redirect to="/admin/login"></Redirect>

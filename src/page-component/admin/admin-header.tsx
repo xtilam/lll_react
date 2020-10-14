@@ -1,37 +1,56 @@
 import React from 'react';
 import WDropdown from '../../components/wdropdown';
-import { DropdownToggle, DropdownItem, DropdownMenu } from 'reactstrap';
+import { DropdownToggle, DropdownItem, DropdownMenu, Button } from 'reactstrap';
 import { ScreenContext } from '../../contexts/screen-context';
 import authentication from '../../admin-auth';
+import MenuSVG from '../../logo-svg/menu';
+import MenuTab from './menu-tab';
+import { AdminUserResult } from '../../api/admin/admin-api';
 
 export default class AdminHeader extends React.Component<{ minScreenResizeMenuTab: number }> {
+    isSmallScreen = true;
     constructor(props: any) {
         super(props);
     }
+    toggleMenu() {
+        $('#menu-tab').toggleClass('is-display');
+    }
     render() {
         const size = 30;
-        let userInfo = JSON.parse(window.localStorage['admin'] || "{}");
+        let userInfo = ((): AdminUserResult => {
+            try {
+                return JSON.parse(window.localStorage['admin']);
+            } catch (error) {
+                return {} as any;
+            }
+        })();
         return <header className="d-flex align-items-center space-sm">
             <ScreenContext.Consumer>
-                {({ screenInnerWidth }) => { if (screenInnerWidth >= this.props.minScreenResizeMenuTab) { $('#menu-tab').removeClass('is-display') }; return undefined; }}
+                {({ screenInnerWidth }) => {
+                    if (screenInnerWidth >= this.props.minScreenResizeMenuTab) {
+                        $('#menu-tab').removeClass('is-display');
+                        this.isSmallScreen = false;
+                    } else {
+                        this.isSmallScreen = true;
+                    }
+                    return null;
+                }}
             </ScreenContext.Consumer>
-            <button onClick={() => {
-                $('#menu-tab').toggleClass('is-display');
-            }}
-                id="show-menu">Menu</button>
+            <Button size="sm" className="mr-3" onClick={this.toggleMenu.bind(this)}
+                id="show-menu"><MenuSVG className="px-1" height="18px" fill="white" /></Button>
             <div className="mr-auto">Admin Page</div>
             <WDropdown
                 dropdownToggle={
-                    <DropdownToggle color="danger" size="sm" className="d-flex space-nm" style={{
+                    <DropdownToggle color="primary" size="sm" className="d-flex space-nm" style={{
                         borderRadius: 0,
                         height: 35,
                         padding: '2px 8px'
                     }}>
-                        <span style={{
+                        <span className="d-none d-sm-block" style={{
                             fontSize: 15,
                             fontWeight: 600,
                             color: "white",
-                            lineHeight: `${size}px`,
+                            lineHeight: `${size}px`
                         }}>{userInfo.fullname}</span>
                         <img style={{
                             width: size,

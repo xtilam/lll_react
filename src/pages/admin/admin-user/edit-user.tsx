@@ -9,7 +9,7 @@ import { Button } from "reactstrap";
 
 interface EditAdminUserProps {
     adminInfo: AdminUserResult,
-    adminMessageRequest: AdminMessageRequest,
+    adminMessageRequest: ()=>AdminMessageRequest,
     onUpdate?: () => any
 }
 interface EditAdminUserState {
@@ -62,19 +62,19 @@ export default class EditAdminUser extends React.Component<EditAdminUserProps, E
     async updateAdminUser(evt: any) {
         evt.preventDefault();
         if (this.wform.current?.isValidInputs()) {
-            let update = await this.props.adminMessageRequest.sendRequest(() => {
+            let update = await this.props.adminMessageRequest().sendRequest(() => {
                 return AdminUserAPI.updateUser(this.state.input);
             })
             if (update) {
                 let file: any = (this.avatarInput.current as any).files[0];
                 if (file) {
                     let messageErrorUploadImage = update.message.content;
-                    let uploadImage: any = await this.props.adminMessageRequest.sendRequest(() => {
+                    let uploadImage: any = await this.props.adminMessageRequest().sendRequest(() => {
                         return AdminUserAPI.uploadAvatar({ image: file, id: this.props.adminInfo.id });
                     }, { getFailed: true });
                     if (uploadImage.message.code !== 0) {
-                        messageErrorUploadImage += ` - ${this.props.adminMessageRequest.state.message}`;
-                        this.props.adminMessageRequest.setState({ color: 'warning', message: messageErrorUploadImage, isHide: false });
+                        messageErrorUploadImage += ` - ${this.props.adminMessageRequest().state.message}`;
+                        this.props.adminMessageRequest().setState({ color: 'warning', message: messageErrorUploadImage, isHide: false });
                     }
                 }
                 this.props.onUpdate && await this.props.onUpdate();

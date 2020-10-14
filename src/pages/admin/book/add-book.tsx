@@ -1,17 +1,15 @@
 import React from "react";
 import { Link } from "react-router-dom";
-import { Button } from "reactstrap";
+import { Button, Col, Container, Row } from "reactstrap";
 import AuthorAPI, { AuthorAPIResult } from "../../../api/admin/author-api";
 import BookAPI, { BookAPIResult } from "../../../api/admin/book-api";
 import CategoryAPI, { CategoryAPIResult } from "../../../api/admin/category-api";
-import GroupPermissionAPI from "../../../api/admin/group-api";
 import PublisherAPI, { PublisherAPIResult } from "../../../api/admin/publisher-api";
 import ListSelect from "../../../components/list-select";
 import WForm from "../../../components/wform";
 import WInput, { WInputOther } from "../../../components/winput";
-import AdminOverrideWindowProvider, { AdminOverrideWindow } from "../../../contexts/admin-overide-window";
+import { AdminOverrideWindow } from "../../../contexts/admin-overide-window";
 import AdminMessageRequest from "../../../page-component/admin/admin-message-request";
-
 
 interface AddBookState {
     isDisable: boolean,
@@ -20,9 +18,11 @@ interface AddBookState {
     authors: any,
 }
 
-export default class AddBook extends React.Component<any, AddBookState> {
+export default class AddBook extends React.Component<{}, AddBookState> {
     form = React.createRef<WForm>();
-    messageRequest: React.RefObject<AdminMessageRequest> = React.createRef();
+    bookImageInput = React.createRef<HTMLInputElement>();
+    bookImageView = React.createRef<HTMLImageElement>();
+    messageRequest = React.createRef<AdminMessageRequest>();
     isShowCategories = false;
     constructor(props: any) {
         super(props);
@@ -50,7 +50,9 @@ export default class AddBook extends React.Component<any, AddBookState> {
         evt.preventDefault();
         let data = { ... this.form.current?.getData(), categories: Object.values(this.state.categories), authors: Object.values(this.state.authors) }
         data.publisher = { id: data.publisher };
-        
+        this.setState(() => { return { isDisable: true } });
+        this.messageRequest.current?.sendRequest(() => { return BookAPI.addBook(data) });
+        this.setState(() => { return { isDisable: false } });
     }
     render() {
         let inputList = {
@@ -73,15 +75,15 @@ export default class AddBook extends React.Component<any, AddBookState> {
                                                 getData={async () => { return (await CategoryAPI.getAllCategory({ unlimited: true })).data }}
                                                 viewData={(data: CategoryAPIResult) => {
                                                     return [
-                                                        <td>{data.categoryCode}</td>,
-                                                        <td>{data.category}</td>
+                                                        <td key="categoryCode">{data.categoryCode}</td>,
+                                                        <td key="category">{data.category}</td>
                                                     ]
                                                 }}
                                                 typeSearch={[
                                                     { propertySearch: 'categoryCode', viewSearch: 'Mã thể loại' },
                                                     { propertySearch: 'category', viewSearch: 'Thể loại' }
                                                 ]}
-                                                header={[<th>Mã thể loại</th>, <th>Thể loại</th>]}
+                                                header={[<th key="categoryCode">Mã thể loại</th>, <th key="category">Thể loại</th>]}
                                                 getKey={(data: CategoryAPIResult) => { return data.id }}
                                                 onComplete={(categories) => {
                                                     console.log(categories);
@@ -138,34 +140,65 @@ export default class AddBook extends React.Component<any, AddBookState> {
                 </div>
             )
         }
-        return <div className="form-container">
+        return <div className={`form-container ${this.state.isDisable && 'disabled'}`}>
             <AdminMessageRequest ref={this.messageRequest} />
             <WForm className={this.state.isDisable ? 'disabled' : ''} onSubmit={this.onSubmit.bind(this)} ref={this.form as any}>
-                <WInput name="title" title_input="Tên sách" required />
-                <div className="d-flex space-nm">
-                    <WInput title_input="isbn" name="isbn" required />
-                    <WInput name="pageNumber" title_input="Số trang" type="number" required />
-                </div>
-                <div className="d-flex space-nm">
-                    <WInput name="edition" title_input="Tái bản" type="number" required />
-                    <WInput name="price" title_input="Giá" type="number" required />
-                </div>
-                <WInputOther title_input="Nhà xuất bản">
-                    <select name="publisher">
-                        {this.state.publishers.map((publisher, index) => {
-                            return <option value={publisher.id}>{publisher.name}</option>
-                        })}
-                    </select>
-                </WInputOther>
-                {inputList.authors}
-                {inputList.categories}
-                <WInputOther title_input="Mô tả">
-                    <textarea name="description" rows={4} required></textarea>
-                </WInputOther>
-                <div className="d-flex space-sm">
-                    <Button color="primary" size="sm">Thêm Sách</Button>
-                    <Link to="/admin/books" className="btn btn-danger btn-sm">Quay về</Link>
-                </div>
+                <Container fluid={true} className="p-0">
+                    <Row>
+                        <Col xs={12}>
+                            <div className="d-flex justify-content-between">
+                                <h2>Thêm Sách</h2>
+                                <img className="avatar" title="Ảnh bìa sách"
+                                    style={{ borderRadius: 0 }}
+                                    src={process.env.REACT_APP_BOOK_IMAGE_PATH + 'default.jpg'}
+                                    alt="default" ref={this.bookImageView}
+                                    onClick={() => { this.bookImageInput.current?.click(); }}
+                                ></img>
+                            </div>
+                        </Col>
+                        <Col xs={12}>
+                            <WInput name="title" title_input="Tên sách" required />
+                        </Col>
+                        <Col md={6} sm={12}>
+                            <WInput title_input="isbn" name="isbn" required />
+                        </Col>
+                        <Col md={6} sm={12}>
+                            <WInput name="pageNumber" title_input="Số trang" type="number" required />
+                        </Col>
+                        <Col md={6} sm={12}>
+                            <WInput name="edition" title_input="Tái bản" type="number" required />
+                        </Col>
+                        <Col md={6} sm={12}>
+                            <WInput name="price" title_input="Giá" type="number" required />
+                        </Col>
+                        <Col xs={12}>
+                            <WInputOther title_input="Nhà xuất bản">
+                                <select name="publisher">
+                                    {this.state.publishers.map((publisher, index) => {
+                                        return <option key={index} value={publisher.id}>{publisher.name}</option>
+                                    })}
+                                </select>
+                            </WInputOther>
+                        </Col>
+                        <Col xs={12}>
+                            {inputList.authors}
+                        </Col>
+                        <Col xs={12}>
+                            {inputList.categories}
+                        </Col>
+                        <Col xs={12}>
+                            <WInputOther title_input="Mô tả">
+                                <textarea name="description" rows={4} required></textarea>
+                            </WInputOther>
+                        </Col>
+                        <Col>
+                            <div className="d-flex space-sm">
+                                <Button color="primary" size="sm">Thêm Sách</Button>
+                                <Link to="/admin/books" className="btn btn-danger btn-sm">Quay về</Link>
+                            </div>
+                        </Col>
+                    </Row>
+                </Container>
             </WForm>
         </div >
     }

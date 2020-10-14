@@ -65,7 +65,7 @@ export default class LoginPage extends React.Component<any, LoginPageState> {
                         [this.state.userInputType.paramName]: this.state.accountInput,
                         password: this.state.passwordInput
                     });
-                    authentication.login(resp.data.token, resp.data.user);
+                    authentication.login(resp.data.token, resp.data.data);
                 } catch (error) {
                     if (isSkipTimeout)
                         setCompelete('login-failed');
