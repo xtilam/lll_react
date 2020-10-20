@@ -113,14 +113,14 @@ export default class DetailPermission extends React.Component<DetailPermissionPr
         />
     }
     async getPermission() {
-        // find id
-        let id = new URLSearchParams(window.location.search).get("id") || (this.props.goBack && this.props.goBack.id);
+        const requestId = new URLSearchParams(window.location.search).get("id");
+        const goBackId = (this.props.goBack && this.props.goBack.id)
+        const id = goBackId || requestId;
         if (id) {
             window.history.replaceState('', '', `/admin/permission/detail?id=${id}`);
-            let resultReq = await this.getAdminMessageReq().sendRequest(() => { return PermissionAPI.getPermission(id as any) }, { hideWhenDone: true });
+            const resultReq = await this.getAdminMessageReq().sendRequest(() => { return PermissionAPI.getPermission(id as any) }, { hideWhenDone: true });
             if (resultReq) {
-                let permissionInfo = resultReq.data;
-                await this.setState({ permissionInfo: permissionInfo });
+                await this.setState({ permissionInfo: resultReq.data });
                 return;
             }
         }

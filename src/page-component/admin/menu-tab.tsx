@@ -18,9 +18,6 @@ interface MenuTabState { }
 let count = 0;
 
 export default class MenuTab extends React.Component<MenuTabProps, MenuTabState> {
-    constructor(props: Readonly<MenuTabProps>) {
-        super(props);
-    }
     renderItem(itemMenu: MenuType | MenuItem): JSX.Element {
         if ((itemMenu as Object).hasOwnProperty('items')) {
             return <li key={++count}>

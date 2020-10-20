@@ -35,7 +35,7 @@ export default class AdminResetPassword extends React.Component<AdminResetPasswo
                 <WInput title_input="Mật khẩu mới" type="password"
                     onChange={(evt) => { this.setState({ passwordInput: evt.currentTarget.value }) }} />
                 <WInput title_input="Xác nhận mật khẩu mới" type="password"
-                    is_invalid={this.state.passwordConfirmInput != this.state.passwordInput}
+                    is_invalid={this.state.passwordConfirmInput !== this.state.passwordInput}
                     onChange={(evt) => { this.setState({ passwordConfirmInput: evt.currentTarget.value }) }} />
                 <br />
                 <Button color="primary" size="sm" children="Cập nhật mật khẩu" />

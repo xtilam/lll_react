@@ -22,8 +22,10 @@ export default class WForm extends React.Component<WFormProps> {
                     switch (input.attr('type')) {
                         case 'radio':
                             for (let radio of (input as any)) {
-                                if (radio.value == value) radio.checked = true;
-                                break;
+                                if (radio.value == value) {
+                                    radio.checked = true;
+                                    break;
+                                }
                             }
                             break;
                         case 'checkbox':

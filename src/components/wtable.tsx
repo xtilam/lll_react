@@ -1,5 +1,6 @@
 import React from "react";
 import { Button, ButtonGroup, Col, Container, Input, InputGroup, InputGroupAddon, Row, Table } from "reactstrap";
+import Utils from "../common/Utils";
 import '../css-animation.scss';
 import FirstSVG from "../logo-svg/first";
 import LastSVG from "../logo-svg/last";
@@ -7,9 +8,8 @@ import NextSVG from "../logo-svg/next";
 import PreviousSVG from "../logo-svg/previous";
 import ReloadSVG from "../logo-svg/reload";
 import './wtable.scss';
-import Utils from "../common/Utils";
 
-interface PageInfo {
+export interface WTablePageInfo {
     data: any[],
     page: number,
     limit: number,
@@ -18,17 +18,17 @@ interface PageInfo {
     totalPage: number
 }
 
-interface TableProps {
-    headers: any[],
+interface TableProps extends React.HTMLAttributes<HTMLTableElement> {
     page?: number
     limit?: number
-    getPage: (page: number, limit: number) => (PageInfo | undefined | Promise<PageInfo | undefined>),
-    fillData: (data: any, index?: number) => (JSX.Element)
-    onPageChangeEvent?: (event: { pageChange: number, limitChange: number }) => any
+    getPage: (page: number, limit: number) => (WTablePageInfo | undefined | Promise<WTablePageInfo | undefined>),
+    fillData: (data: any, index: number) => (JSX.Element),
+    onPageChangeEvent?: (event: { pageChange: number, limitChange: number }) => any,
+    headers: any[]
 }
 
 interface TableState {
-    pageData: PageInfo,
+    pageData: WTablePageInfo,
     limitValue?: number,
     pageValue?: number,
     isWaiting: boolean
@@ -36,6 +36,8 @@ interface TableState {
 
 export default class WTable extends React.Component<TableProps, TableState> {
     tableBody: React.RefObject<any>;
+    keyTable: string = Utils.randomString(10);
+
     constructor(props: TableProps) {
         super(props);
         let page = this.props.page || 1;
@@ -43,12 +45,13 @@ export default class WTable extends React.Component<TableProps, TableState> {
         this.state = { pageData: { data: [] } as any, pageValue: page, limitValue: limit, isWaiting: false };
         this.reloadPage = this.reloadPage.bind(this);
         this.tableBody = React.createRef();
-        console.log('this is table constructor')
+        Utils.notSetStateWhenComponentUnmount(this)
     }
+
     async getPage(page: number, limit: number) {
         this.setState(() => { return { isWaiting: true } });
         if (limit <= 0) limit = 1;
-        let pageGet: PageInfo = this.props.getPage(page, limit) as PageInfo;
+        let pageGet: WTablePageInfo = this.props.getPage(page, limit) as WTablePageInfo;
         if (pageGet instanceof Promise) {
             pageGet = await pageGet;
         }
@@ -76,16 +79,17 @@ export default class WTable extends React.Component<TableProps, TableState> {
         }
     }
     async reloadPage() {
+        this.keyTable = Utils.randomString();
         await this.getPage(this.state.pageValue as number, this.state.limitValue as number);
     }
     render() {
         return (
-            <div className={"table-view" + (this.state.isWaiting ? ' disabled' : '')}>
+            <div className={"table-view " + this.props.className + (this.state.isWaiting ? ' disabled' : '')} id={this.props.id}>
                 <Table hover={true}>
                     <thead>
                         <tr>{this.props.headers.map((e, index) => { return <th key={index}>{e}</th> })}</tr>
                     </thead>
-                    <tbody ref={this.tableBody}>
+                    <tbody ref={this.tableBody} key={this.keyTable}>
                         {
                             this.state.pageData.data.map((inRow: any[], index: number) => {
                                 return this.props.fillData(inRow, index);
@@ -94,7 +98,6 @@ export default class WTable extends React.Component<TableProps, TableState> {
                     </tbody>
                 </Table >
                 <Container fluid={true} className="table-control p-0">
-                    {/* <div className="table-control d-flex justify-content-end align-items-center"> */}
                     <Row>
                         <Col md={'auto'} sm={12} className="d-flex mb-2 mx-sm-auto ml-md-0 mr-md-auto">
                             <div className="d-flex mx-auto m-md-0">

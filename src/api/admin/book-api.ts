@@ -1,7 +1,7 @@
 import axiosClient from "../axiosCient";
 import { APIResult, BaseDataModelAPIResult, PageDTO } from "../declare";
 import { AuthorAPIResult } from "./author-api";
-import { CategoryAPIResult } from "./category-api";
+import { CategoryAPIResult } from "./category-book-api";
 import { PublisherAPIResult } from "./publisher-api";
 
 const BookAPI = {

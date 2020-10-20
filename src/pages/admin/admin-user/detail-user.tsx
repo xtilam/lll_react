@@ -66,59 +66,6 @@ export default class DetailAdminUser extends React.Component<DetailAdminUserProp
             : '/admin/admin-users'
 
         return (
-            // <div className={`menu-select-layout ${this.state.isDisable ? 'disabled' : ''}`}>
-            //     <div className="menu-select">
-            //         <ul>
-            //             <li className="bg-danger text-white"
-            //                 onClick={(evt) => {
-            //                     let firstChild = evt.currentTarget.firstChild; firstChild && (firstChild as any).click();
-            //                 }}>{btnGoBack}</li>
-            //             <li className={viewAction === 'view-detail' ? 'active' : ''} view-action="view-detail"
-            //                 onClick={this.menuClickEvent.bind(this)}>Xem thông tin</li>
-            //             <li className={viewAction === 'update-user' ? 'active' : ''} view-action="update-user"
-            //                 onClick={this.menuClickEvent.bind(this)}>Cập nhật TK</li>
-            //             <li className={viewAction === 'change-password' ? 'active' : ''} view-action="change-password"
-            //                 onClick={this.menuClickEvent.bind(this)}>Thay đổi mật khẩu</li>
-            //             <li className={viewAction === 'permissions' ? 'active' : ''} view-action="permissions"
-            //                 onClick={this.menuClickEvent.bind(this)}>Chức năng</li>
-            //             <li className={viewAction === 'group-permissions' ? 'active' : ''} view-action="group-permissions"
-            //                 onClick={this.menuClickEvent.bind(this)}>Nhóm chức năng</li>
-            //         </ul>
-            //     </div>
-            //     <div className="child-content">
-            //         <div className={`form-container`}>
-            //             <AdminMessageRequest ref={this.adminMessageRequest}
-            //                 onBeforeSendRequest={() => { this.setState({ isDisable: true }) }}
-            //                 callback_after_send_request={() => { this.setState({ isDisable: false }) }}
-            //             />
-            //             {
-            //                 !this.state.isNotFoundUser ? (
-            //                     <div>
-            //                         { viewAction === "view-detail"
-            //                             && 
-            //                         }
-            //                         { viewAction === 'update-user' && }
-            //                         { viewAction === 'permissions' && <UpdatePermissions
-            //                             adminMessageRequest={() => (this.adminMessageRequest.current as any)}
-            //                             id={adminInfo.id}
-            //                         />}
-            //                         { viewAction === 'change-password' && <AdminResetPassword
-            //                             adminMessageRequest={() => (this.adminMessageRequest.current as any)}
-            //                             adminInfo={this.state.adminInfo}
-            //                         />}
-            //                         { viewAction === 'group-permissions' && <UpdateGroups
-            //                             adminInfo={this.state.adminInfo}
-            //                             adminMessageRequest={() => (this.adminMessageRequest.current as any)}
-            //                         />}
-            //                     </div>
-            //                 ) : <div className="d-flex space-sm">
-            //                         <Button color="primary" size="sm" onClick={this.getUser.bind(this)}>Tải lại</Button>
-            //                         {btnGoBack}
-            //                     </div>
-            //             }
-            //         </div>
-            //     </div>
-            // </div >
             <DetailAdminPage
                 ref={this.detailPage}
                 goBackAction={goBackAction}
@@ -127,7 +74,7 @@ export default class DetailAdminUser extends React.Component<DetailAdminUserProp
                         name: "Xem thông tin", body: <div>
                             <div className="d-flex justify-content-between">
                                 <h2>Thông tin tài khoản {this.state.adminInfo.fullname}</h2>
-                                <img className="avatar" src={`${process.env.REACT_APP_ADMIN_USER_IMAGE_PATH}${adminInfo.id}.jpg`}
+                                <img className="avatar" src={`${process.env.REACT_APP_ADMIN_USER_IMAGE_PATH as string}${adminInfo.id}.jpg`}
                                     onError={(evt) => { evt.currentTarget.src = `${process.env.REACT_APP_ADMIN_USER_IMAGE_PATH}default.jpg` }}
                                 />
                             </div>
@@ -220,19 +167,20 @@ export default class DetailAdminUser extends React.Component<DetailAdminUserProp
         )
     }
     async getUser() {
-        let getData = () => {
-            let { goBack }: any = this.props;
-            let search = new URLSearchParams(window.location.search);
+        const getData = () => {
+            const { goBack }: any = this.props;
+            const search = new URLSearchParams(window.location.search);
             for (let key of ['id', 'adminCode']) {
                 let value = (goBack && goBack[key]) || search.get(key);
-                if (value) return { data: { [key]: value }, key: key, value: value }
+                if (value) return { key: key, value: value }
             }
         }
         let data: any = getData();
+
         if (data !== undefined) {
             window.history.replaceState('', '', `/admin/admin-user/detail?${data.key}=${data.value}`);
 
-            let resultReq = await this.getAdminMessageReq().sendRequest(() => AdminUserAPI.getUser(data.data), { hideWhenDone: true });
+            let resultReq = await this.getAdminMessageReq().sendRequest(() => AdminUserAPI.getUser({ [data.key]: data.value } as any), { hideWhenDone: true });
 
             if (resultReq) {
                 let adminInfo = resultReq.data;

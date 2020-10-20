@@ -28,7 +28,7 @@ export function App() {
 }
 function NotFound() {
   return (<div>
-    <h2>Not Found this Page</h2>
+    <h2>Not Found</h2>
     <h2><Link to="/admin" children="Go to Admin Page :)"/></h2>
   </div>);
 }

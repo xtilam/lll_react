@@ -17,7 +17,7 @@ ReactDOM.render(
   (window as any).moment = moment;
   let evtClick = (evt: any) => {
     let timeNow = new Date().getTime();
-    if (timeNow - 100 < time) { window.getSelection()?.removeAllRanges(); }
+    if (timeNow - 1000 < time) { window.getSelection()?.removeAllRanges(); }
   }
   document.addEventListener('dblclick', evtClick)
   document.addEventListener('mousedown', () => { time = new Date().getTime(); })

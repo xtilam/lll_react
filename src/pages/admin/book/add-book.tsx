@@ -3,7 +3,7 @@ import { Link } from "react-router-dom";
 import { Button, Col, Container, Row } from "reactstrap";
 import AuthorAPI, { AuthorAPIResult } from "../../../api/admin/author-api";
 import BookAPI, { BookAPIResult } from "../../../api/admin/book-api";
-import CategoryAPI, { CategoryAPIResult } from "../../../api/admin/category-api";
+import CategoryAPI, { CategoryAPIResult } from "../../../api/admin/category-book-api";
 import PublisherAPI, { PublisherAPIResult } from "../../../api/admin/publisher-api";
 import ListSelect from "../../../components/list-select";
 import WForm from "../../../components/wform";
@@ -86,7 +86,6 @@ export default class AddBook extends React.Component<{}, AddBookState> {
                                                 header={[<th key="categoryCode">Mã thể loại</th>, <th key="category">Thể loại</th>]}
                                                 getKey={(data: CategoryAPIResult) => { return data.id }}
                                                 onComplete={(categories) => {
-                                                    console.log(categories);
                                                     removeWindow(categoriesView as any);
                                                     this.setState({ categories: categories });
                                                 }}
@@ -127,7 +126,6 @@ export default class AddBook extends React.Component<{}, AddBookState> {
                                                 header={[<th>Mã tác giả</th>, <th>Tên tác giả</th>]}
                                                 getKey={(data: any) => { return data.id }}
                                                 onComplete={(authors) => {
-                                                    console.log(authors);
                                                     removeWindow(authorView as any);
                                                     this.setState({ authors: authors });
                                                 }}

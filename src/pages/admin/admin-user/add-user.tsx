@@ -2,7 +2,6 @@ import React from "react";
 import { Link } from "react-router-dom";
 import { Button } from "reactstrap";
 import AdminUserAPI, { AdminDTO } from "../../../api/admin/admin-api";
-import Utils from "../../../common/Utils";
 import WForm from "../../../components/wform";
 import WInput from "../../../components/winput";
 import SYSTEM_CONSTANTS from "../../../constants";
@@ -21,7 +20,7 @@ interface AddAdminUserState {
     isDisable: boolean,
 }
 
-export default class AddAdminUser extends React.Component<any, AddAdminUserState> {
+export default class AddAdminUser extends React.Component<{}, AddAdminUserState> {
     messageRequest: React.RefObject<AdminMessageRequest>;
     avatar: React.RefObject<HTMLImageElement>;
     avatarInput: React.RefObject<HTMLInputElement>;

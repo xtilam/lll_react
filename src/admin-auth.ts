@@ -1,6 +1,4 @@
-import axiosClient from "./api/axiosCient";
 import AdminUserAPI from "./api/admin/admin-api";
-import Axios from "axios";
 import { setLoginContext } from "./contexts/admin-authencation";
 
 const authentication = {

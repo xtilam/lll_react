@@ -1,6 +1,7 @@
 
-import React from "react";
+import React, { Fragment } from "react";
 import { Button, Col, Container, Row } from "reactstrap";
+import { JsxFragment } from "typescript";
 import Utils from "../common/Utils";
 import ReloadSVG from "../logo-svg/reload";
 import './list-select.scss';
@@ -9,8 +10,8 @@ import WInput, { WInputOther } from "./winput";
 
 interface ListSelectProps {
     getData: () => any,
-    viewData: (data: any) => JSX.Element[],
-    header: JSX.Element[],
+    viewData: (data: any) => (JSX.Element[] | JSX.Element),
+    header: JSX.Element[] | JSX.Element,
     filter?: any,
     typeSearch: { propertySearch: string, viewSearch: string }[],
     getKey: (data: any) => any,
@@ -63,7 +64,7 @@ export default class ListSelect extends React.Component<ListSelectProps, ListSel
         if (this.searchValue) {
             let filter;
             if (this.props.filter && (filter = this.props.filter[typeSearch as any])) {
-                
+
             } else {
                 filter = Utils.filterString(this.searchValue, (data) => { return data[typeSearch as string] || '' });
             }
@@ -96,6 +97,7 @@ export default class ListSelect extends React.Component<ListSelectProps, ListSel
     render() {
         let { isWaiting, filter } = this.state;
         let valueSelect: any = {}; // lọc ra các phần tử không tồn tại
+
         return <div className={`list-select ${this.state.isWaiting ? 'disabled' : ''}`} >
             <Container fluid={true} className="my-2 px-0">
                 <Row>
@@ -129,7 +131,7 @@ export default class ListSelect extends React.Component<ListSelectProps, ListSel
                         <th>
                             <WCheckBox className="select" checked={this.state.justShowSelected} onChange={(evt) => { this.setState({ justShowSelected: evt.currentTarget.checked }) }} />
                         </th>
-                        <React.Fragment key="12" children={this.props.header}/>
+                        {this.props.header}
                     </tr>
                 </thead>
                 <tbody ref={this.tableRef}>
@@ -145,10 +147,14 @@ export default class ListSelect extends React.Component<ListSelectProps, ListSel
                                 (!this.state.justShowSelected || dataExits)
                                 && (filter instanceof Function ? filter(data) : true)
                             ) {
-                                return <tr key={key}>
+                                return <tr key={key} onClick={(evt) => {
+                                    if ($(evt.target).closest('.select-btn').length > 0) return
+                                    const checkbox = $(evt.target).closest(`tr`).find('> td:nth-child(2) input[type="checkbox"]')[0]
+                                    checkbox.click();
+                                }}>
                                     <td>{index + 1}</td>
                                     <td>
-                                        <WCheckBox className="select" onChange={(evt) => {
+                                        <WCheckBox className="select-btn" onChange={(evt) => {
                                             let checked = evt.currentTarget.checked;
                                             if (checked) {
                                                 this.valueSelected[key] = data;

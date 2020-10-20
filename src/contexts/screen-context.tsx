@@ -4,16 +4,18 @@ import React from 'react';
 export const ScreenContext = React.createContext<IContextState>(undefined as any);
 
 interface IContextState {
-    screenInnerWidth: number
+    screenInnerWidth: number,
+
 }
 
-export default class ScreenProvider extends React.Component<any, IContextState>{
+export default class ScreenProvider extends React.Component<{}, IContextState>{
     constructor(props: any) {
         super(props);
         this.state = {
             screenInnerWidth: window.innerWidth,
-
         }
+    }
+    componentDidMount() {
         window.addEventListener('resize', () => {
             this.setState(state => { return { screenInnerWidth: window.innerWidth } });
         })

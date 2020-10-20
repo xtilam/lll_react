@@ -26,7 +26,8 @@ code {
   @extend .noselect;
 }
 html {
-  min-width: 300px;
+  overflow: auto;
+  background-color: white;
 }
 .text-one-line {
   text-overflow: ellipsis;

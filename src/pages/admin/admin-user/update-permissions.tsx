@@ -1,4 +1,4 @@
-import React from "react";
+import React, { Fragment } from "react";
 import AdminUserAPI from "../../../api/admin/admin-api";
 import { PermissionAPIResult } from "../../../api/admin/permission-api";
 import ListSelect from "../../../components/list-select";
@@ -18,16 +18,12 @@ export default class UpdatePermissions extends React.Component<UpdatePermissions
     render() {
         return <ListSelect
             getData={async () => {
-                this.setState({ isWaiting: true });
                 let result = await this.props.adminMessageRequest().sendRequest(() => {
                     return AdminUserAPI.getAdminPermissions(this.props.id as number);
                 }, { hideWhenDone: true });
-                this.setState(() => { return { isWaiting: false } });
-                if (result !== undefined) {
-                    return result.data;
-                } else {
-                    return [];
-                }
+
+                if (result !== undefined) return result.data
+                return [];
             }}
             typeSearch={[
                 { propertySearch: 'code', viewSearch: 'Mã Chức năng' },
@@ -39,7 +35,7 @@ export default class UpdatePermissions extends React.Component<UpdatePermissions
                     <td key="name">{data.name}</td>
                 ]
             }}
-            header={[<th key="code">Mã CN</th>, <th key="name">Tên CN</th>]}
+            header={<Fragment><th>Mã CN</th><th>Tên CN</th></Fragment>}
             getKey={(data: PermissionAPIResult) => { return data.id }}
             onComplete={this.updatePermissions.bind(this)}
             getAllow={({ isAllow }) => { return isAllow }}

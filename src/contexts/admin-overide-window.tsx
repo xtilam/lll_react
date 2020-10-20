@@ -3,7 +3,7 @@ import React from "react";
 export const AdminOverrideWindow = React.createContext<AdminOverrideWindowState>(undefined as any);
 interface AdminOverrideWindowState {
     windows: JSX.Element[],
-    addWindow: (window: JSX.Element) => void,
+    addWindow: (window: JSX.Element) => JSX.Element,
     removeWindow: (window: JSX.Element) => void,
     clear: () => void
 }

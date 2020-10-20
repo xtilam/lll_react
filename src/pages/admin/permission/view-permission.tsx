@@ -1,31 +1,76 @@
 import moment from "moment";
-import React from "react";
+import React, { Fragment } from "react";
 import { Link } from "react-router-dom";
 import { Button } from "reactstrap";
 import PermissionAPI, { PermissionAPIResult } from "../../../api/admin/permission-api";
+import { APIResult } from "../../../api/declare";
 import Utils from "../../../common/Utils";
 import WCheckBox from "../../../components/wcheckbox";
 import WTable from "../../../components/wtable";
 import SYSTEM_CONSTANTS from "../../../constants";
+import { AdminOverrideWindow } from "../../../contexts/admin-overide-window";
 import AddSVG from "../../../logo-svg/add";
 import CancelSVG from "../../../logo-svg/cancel";
 import EditSVG from "../../../logo-svg/edit";
 import AdminMessageRequest from "../../../page-component/admin/admin-message-request";
+import BaseCrudView, { BaseViewConfig } from "../base/base-view";
 import DetailPermission from "./detail-permission";
 
-interface ViewPermissionState {
-    action: undefined | 'view-detail-page',
-    isSelectedAll: boolean,
-}
-export default class ViewPermission extends React.Component<any, ViewPermissionState>{
-    tableRef: React.RefObject<WTable> = React.createRef();
-    requestMessage: React.RefObject<AdminMessageRequest> = React.createRef();
-    firstNumOfKey: number;
-    idsSelected: number[] = [];
-    page: number;
-    limit: number;
-    idSelected: number = 0;
-
+export default class ViewPermission extends BaseCrudView<PermissionAPIResult>{
+    getId(data: PermissionAPIResult) {
+        return data.id
+    }
+    fillData(data: PermissionAPIResult, unselectClass: string): JSX.Element {
+        return <Fragment>
+            <td>{data.code}</td>
+            <td>{data.name}</td>
+            <td title={`Cập nhât: ${data.modifiedBy} - ${moment(data.modifiedDate).calendar()}\nKhởi tạo: ${data.createBy} - ${moment(data.createDate).calendar()}`
+            }>{data.modifiedBy}</td>
+            <td className="text-center">
+                <AdminOverrideWindow.Consumer>
+                    {({ addWindow, removeWindow }) => {
+                        return <Button color="primary" size="sm" onClick={() => {
+                            const detailPage = addWindow(<DetailPermission
+                                goBack={{
+                                    action: () => removeWindow(detailPage),
+                                    id: data.id,
+                                    oldLocation: `${this.config.urlPage}?page=${this.page}&limit=${this.limit}`
+                                }}
+                            />)
+                        }}>
+                            <EditSVG color="white" className="icon" />
+                        </Button>
+                    }}
+                </AdminOverrideWindow.Consumer>
+            </td>
+        </Fragment>
+    }
+    getPageAPIMethod(page: number, limit: number): Promise<APIResult<any, any>> {
+        return PermissionAPI.getAllPermission({ page: page, limit: limit, isUnlimited: false })
+    }
+    subRender(): JSX.Element | null {
+        return null
+    }
+    configure(): BaseViewConfig<PermissionAPIResult> {
+        return {
+            headers: [
+                'Mã CN',
+                'Tên CN',
+                'Cập nhật',
+                <div className="text-center">Chi tiết</div>
+            ],
+            urlPage: '/admin/permissions',
+            addPage: {
+                textButton: 'Thêm chức năng',
+                link: '/admin/permission/add'
+            },
+            deleteAction: {
+                textButton: 'Xóa',
+                deleteMethod: PermissionAPI.deletePermissions
+            }
+        }
+    }
+    /*
     render() {
         return (
             <div id="main-view">
@@ -148,4 +193,5 @@ export default class ViewPermission extends React.Component<any, ViewPermissionS
         }
         return undefined;
     }
+    */
 }

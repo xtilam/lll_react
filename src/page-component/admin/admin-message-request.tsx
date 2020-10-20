@@ -1,13 +1,12 @@
 import React from "react";
 import authentication from "../../admin-auth";
 import Utils from "../../common/Utils";
-import SYSTEM_CONSTANTS from "../../constants";
 import CancelSVG from "../../logo-svg/cancel";
 
 interface AdminMessageRequestProps extends React.HTMLAttributes<HTMLElement> {
     message?: string,
     is_hide?: boolean,
-    callback_after_send_request?: () => any,
+    onCompleteSendRequest?: () => any,
     onBeforeSendRequest?: () => any,
 }
 interface AdminMessageRequestState {
@@ -17,9 +16,11 @@ interface AdminMessageRequestState {
     isWaitRequest?: boolean
 }
 export default class AdminMessageRequest extends React.Component<AdminMessageRequestProps, AdminMessageRequestState>{
+    __isMounted = true;
     constructor(props: AdminMessageRequestProps) {
         super(props);
         this.state = { isHide: this.props.is_hide ?? true, message: this.props.message ?? '', color: this.props.color ?? '', isWaitRequest: false };
+        Utils.notSetStateWhenComponentUnmount(this);
     }
     async sendRequest<K>(requestMethod: (() => Promise<K> | Promise<K>),
         config: {
@@ -29,8 +30,10 @@ export default class AdminMessageRequest extends React.Component<AdminMessageReq
             hideWaiting?: boolean
         } = {}): Promise<K | undefined> {
         this.props.onBeforeSendRequest && this.props.onBeforeSendRequest();
+        console.log('start request....', this.setState)
         !config.hideWaiting && this.setState(() => { return { isWaitRequest: true, isHide: false, message: config?.waitingMessage ?? 'Đang xử lí', color: 'success' } });
         Utils.lostFocus();
+        await Utils.waitPromise(2000)
         let state: AdminMessageRequestState = {};
         let request;
         try {
@@ -67,8 +70,8 @@ export default class AdminMessageRequest extends React.Component<AdminMessageReq
                 state.message = 'Lỗi nhận request: ' + error;
             }
         }
-        await this.setState(() => { return state });
-        this.props.callback_after_send_request && this.props.callback_after_send_request();
+        await this.setState(() => state);
+        this.props.onCompleteSendRequest && this.props.onCompleteSendRequest();
         return request;
     }
     setMessage(message: { color?: string, message?: string, isHide?: boolean }): any {

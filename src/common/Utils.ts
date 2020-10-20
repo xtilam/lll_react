@@ -1,3 +1,5 @@
+import WTable from "../components/wtable";
+
 const Utils = {
     formToJson: (formData: FormData) => {
         let result: any = {};
@@ -16,6 +18,20 @@ const Utils = {
     },
     lostFocus: () => {
         $('#lost-focus').focus();
+    },
+    waitPromise: (time: number) => new Promise((resolve) => setTimeout(resolve, time)),
+    notSetStateWhenComponentUnmount: (component: any) => {
+        const setState = component.setState
+        const unmount = component.componentWillUnmount
+        component.__isMounted = true
+        component.componentWillUnmount = function () {
+            this.__isMounted = false
+            console.log(this.prototype)
+            unmount && unmount()
+        }
+        component.setState = function (...args: any) {
+            if (this.__isMounted) setState.apply(this, args)
+        }
     },
     getPageRequest: (pageDefault: { page: number, limit: number } = { page: 1, limit: 10 }) => {
         let search = new window.URLSearchParams(window.location.search as any);
@@ -66,7 +82,7 @@ const Utils = {
         }
         return result;
     },
-    makeId: (length: number): string => {
+    randomString: (length: number = 10): string => {
         let result = '';
         let characters = 'abcdefghijklmnopqrstuvwxyz';
         let charactersLength = characters.length;
@@ -74,6 +90,16 @@ const Utils = {
             result += characters.charAt(Math.floor(Math.random() * charactersLength));
         }
         return result;
+    },
+    nextClick: (callback: () => any) => {
+        document.addEventListener('click', getEventClickOneTime())
+        function getEventClickOneTime() {
+            const evt = () => {
+                document.removeEventListener('click', evt)
+                callback()
+            }
+            return evt;
+        }
     }
 }
 

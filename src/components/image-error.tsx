@@ -1,6 +1,7 @@
 import React from "react";
-interface ImageErrorProps extends React.HTMLProps<HTMLImageElement>{
-    'err-src': string
+interface ImageErrorProps extends React.HTMLAttributes<HTMLImageElement> {
+    'err_src': string,
+    src: string 
 }
 export default class ImageError extends React.Component<ImageErrorProps, any>{
     constructor(props: ImageErrorProps) {
@@ -10,20 +11,21 @@ export default class ImageError extends React.Component<ImageErrorProps, any>{
         }
     }
     onError() {
-        if (this.state.src !== this.props['err-src']) {
+        if (this.state.src !== this.props['err_src']) {
             this.setState({
-                src: this.props['err-src']
+                src: this.props.err_src
             })
         }
     }
     render() {
-        let props = {
+        const props = {
             ... this.props,
             onError: () => {
                 this.onError();
             },
-            src: this.state.src
+            src: this.state.src,
+            err_src: undefined
         };
-        return React.createElement('img', props);
+        return <img {...props}></img>;
     }
 }
